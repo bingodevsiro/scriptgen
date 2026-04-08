@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScriptGen - AI Script Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0D0D0D;
+            --surface: #1A1A1A;
+            --border: #2A2A2A;
+            --primary: #10B981;
+            --primary-hover: #059669;
+            --text: #FAFAFA;
+            --text-secondary: #A1A1AA;
+            --accent: #6366F1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Geist', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 48px 0;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .categories {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        
+        .category {
+            padding: 8px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .category:hover, .category.active {
+            background: var(--primary);
+            color: var(--bg);
+            border-color: var(--primary);
+        }
+        
+        .main-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text);
+            font-family: 'Geist', system-ui, sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        textarea::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: var(--bg);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            color: var(--text);
+            border-color: var(--text-secondary);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .output {
+            margin-top: 24px;
+            display: none;
+        }
+        
+        .output.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .output-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .copy-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .code-block {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            color: #E4E4E7;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 48px 0;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">⚡ ScriptGen</div>
+            <p class="tagline">Generate code scripts from AI-powered prompts</p>
+        </header>
+        
+        <div class="categories">
+            <button class="category active" data-category="general">General</button>
+            <button class="category" data-category="python">Python</button>
+            <button class="category" data-category="javascript">JavaScript</button>
+            <button class="category" data-category="bash">Bash</button>
+            <button class="category" data-category="api">API</button>
+            <button class="category" data-category="automation">Automation</button>
+        </div>
+        
+        <div class="main-card">
+            <textarea id="prompt" placeholder="Describe what script you need...&#10;&#10;Example: Create a Python script that reads a CSV file and calculates the average of a column"></textarea>
+            
+            <div class="actions">
+                <button class="btn btn-primary" id="generateBtn">Generate Script</button>
+                <button class="btn btn-secondary" id="clearBtn">Clear</button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Generating your script...</p>
+            </div>
+            
+            <div class="output" id="output">
+                <div class="output-header">
+                    <span class="output-label">Generated Script</span>
+                    <button class="copy-btn" id="copyBtn">Copy</button>
+                </div>
+                <div class="code-block" id="codeOutput"></div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Built with AI • Free to use</p>
+        </footer>
+    </div>
+    
+    <script>
+        const promptInput = document.getElementById('prompt');
+        const generateBtn = document.getElementById('generateBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const loading = document.getElementById('loading');
+        const output = document.getElementById('output');
+        const codeOutput = document.getElementById('codeOutput');
+        const copyBtn = document.getElementById('copyBtn');
+        const categories = document.querySelectorAll('.category');
+        
+        let selectedCategory = 'general';
+        
+        categories.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categories.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedCategory = btn.dataset.category;
+            });
+        });
+        
+        generateBtn.addEventListener('click', async () => {
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                promptInput.focus();
+                return;
+            }
+            
+            loading.classList.add('show');
+            output.classList.remove('show');
+            generateBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, category: selectedCategory })
+                });
+                
+                const data = await response.json();
+                codeOutput.textContent = data.script || '// Generated script will appear here';
+                output.classList.add('show');
+            } catch (error) {
+                codeOutput.textContent = '// Error generating script. Please try again.\n// For now, here\'s a placeholder:\n\nconsole.log("ScriptGen - Demo Mode");';
+                output.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+                generateBtn.disabled = false;
+            }
+        });
+        
+        clearBtn.addEventListener('click', () => {
+            promptInput.value = '';
+            output.classList.remove('show');
+        });
+        
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(codeOutput.textContent);
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+        });
+        
+        promptInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                generateBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
