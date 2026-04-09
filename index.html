@@ -42,20 +42,15 @@
         .container { max-width: 800px; margin: 0 auto; padding: 24px; }
         
         header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 32px 0;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .logo {
-            display: block;
         }
         
         .logo {
             font-size: 2rem;
             font-weight: 700;
-            text-align: center;
             background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -291,7 +286,7 @@
     <div class="container">
         <header>
             <div class="logo">⚡ ScriptGen</div>
-            <div class="header-controls" style="justify-content: center;">
+            <div class="header-controls">
                 <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
             </div>
         </header>
