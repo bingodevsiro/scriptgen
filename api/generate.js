@@ -18,6 +18,7 @@ export default async function handler(req, res) {
     rust: 'You are a Rust expert. Generate safe, efficient Rust code.',
     sql: 'You are a SQL expert. Generate optimized SQL queries.',
     docker: 'You are a Docker expert. Generate Dockerfiles and docker-compose files.',
+    batch: 'You are a Windows Batch scripting expert. Generate clean Windows CMD/Batch scripts with proper error handling.',
     api: 'You are a backend API expert. Generate REST API code.',
   };
 
