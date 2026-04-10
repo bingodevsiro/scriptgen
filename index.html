@@ -334,6 +334,8 @@
                     <div class="output-actions">
                         <button class="action-btn" id="copyBtn">Copy</button>
                         <button class="action-btn" id="downloadBtn">Download</button>
+                        <button class="action-btn" id="exportMdBtn">Markdown</button>
+                        <button class="action-btn" id="exportPdfBtn">PDF</button>
                         <button class="action-btn share" id="shareBtn">Share</button>
                     </div>
                 </div>
@@ -348,6 +350,7 @@
     
     <div class="toast" id="toast"></div>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         const promptInput = document.getElementById('prompt');
         const generateBtn = document.getElementById('generateBtn');
@@ -358,6 +361,8 @@
         const copyBtn = document.getElementById('copyBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const shareBtn = document.getElementById('shareBtn');
+        const exportMdBtn = document.getElementById('exportMdBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
         const themeBtn = document.getElementById('themeBtn');
         const toast = document.getElementById('toast');
         const categories = document.querySelectorAll('.category');
@@ -472,6 +477,39 @@
             const shareUrl = `${window.location.origin}${window.location.pathname}?code=${b64}`;
             navigator.clipboard.writeText(shareUrl);
             showToast('Share link copied!');
+        });
+        
+        // Export Markdown
+        exportMdBtn.addEventListener('click', () => {
+            const code = codeOutput.textContent;
+            const prompt = promptInput.value.trim();
+            const md = `# ScriptGen - Generated Script\n\n**Category:** ${selectedCategory}\n**Prompt:** ${prompt}\n\n\`\`\`${selectedCategory}\n${code}\n\`\`\``;
+            const blob = new Blob([md], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `script.md`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Markdown exported!');
+        });
+        
+        // Export PDF
+        exportPdfBtn.addEventListener('click', () => {
+            const code = codeOutput.textContent;
+            const prompt = promptInput.value.trim();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16);
+            doc.text('ScriptGen - Generated Script', 10, 15);
+            doc.setFontSize(10);
+            doc.text(`Category: ${selectedCategory}`, 10, 25);
+            doc.text(`Prompt: ${prompt}`, 10, 32);
+            doc.setFontSize(9);
+            const lines = doc.splitTextToSize(code, 180);
+            doc.text(lines, 10, 42);
+            doc.save('script.pdf');
+            showToast('PDF exported!');
         });
         
         // Load shared code
