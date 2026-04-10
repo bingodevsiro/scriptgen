@@ -302,6 +302,27 @@
         
         .template-btn:hover { border-color: var(--accent); color: var(--accent); }
         
+        .templates-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .template-toggle {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        
+        .template-toggle:hover { text-decoration: underline; }
+        
+        .templates.expanded .template-btn { display: inline-block; }
+        .templates:not(.expanded) .template-btn:nth-child(n+4) { display: none; }
+        
         .search-row { margin-top: 12px; }
         
         .search-input {
@@ -382,7 +403,10 @@
         <p class="tagline">Generate code scripts from AI-powered prompts</p>
         
         <div class="templates-section">
-            <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px;">📋 Quick Templates</h3>
+            <div class="templates-header">
+                <h3 style="font-size: 0.9rem; color: var(--text-secondary);">📋 Quick Templates</h3>
+                <button class="template-toggle" id="templateToggle">Show all</button>
+            </div>
             <div class="templates" id="templates"></div>
         </div>
         
@@ -493,20 +517,41 @@
             python: [
                 { title: 'CSV Reader', prompt: 'Read a CSV file and calculate statistics for each column' },
                 { title: 'API Client', prompt: 'Create a REST API client with error handling' },
-                { title: 'Web Scraper', prompt: 'Scrape data from a website using BeautifulSoup' }
+                { title: 'Web Scraper', prompt: 'Scrape data from a website using BeautifulSoup' },
+                { title: 'JSON Parser', prompt: 'Parse and transform JSON data with validation' },
+                { title: 'File Organizer', prompt: 'Organize files in a directory by type or date' },
+                { title: 'Email Sender', prompt: 'Send emails with attachments using SMTP' }
             ],
             javascript: [
                 { title: 'Fetch API', prompt: 'Create a function that fetches data from an API with retry logic' },
                 { title: 'Array Utils', prompt: 'Common array manipulation functions (map, filter, reduce)' },
-                { title: 'Event Handler', prompt: 'Debounce and throttle event handlers' }
+                { title: 'Event Handler', prompt: 'Debounce and throttle event handlers' },
+                { title: 'Local Storage', prompt: 'Wrapper for localStorage with JSON serialization' },
+                { title: 'Form Validator', prompt: 'Validate form inputs with regex patterns' }
             ],
             bash: [
                 { title: 'Backup Script', prompt: 'Create a backup script that zips folders and deletes old backups' },
-                { title: 'System Info', prompt: 'Display system information (CPU, RAM, disk)' }
+                { title: 'System Info', prompt: 'Display system information (CPU, RAM, disk)' },
+                { title: 'Log Monitor', prompt: 'Monitor a log file and alert on keywords' },
+                { title: 'Docker Cleanup', prompt: 'Clean up unused Docker containers and images' }
             ],
             sql: [
                 { title: 'CRUD Ops', prompt: 'Create a complete CRUD stored procedure' },
-                { title: 'Report Query', prompt: 'Monthly sales report with JOINs and aggregations' }
+                { title: 'Report Query', prompt: 'Monthly sales report with JOINs and aggregations' },
+                { title: 'Data Migration', prompt: 'Migrate data between tables with transformations' }
+            ],
+            go: [
+                { title: 'HTTP Server', prompt: 'Create a simple HTTP server with routing' },
+                { title: 'CLI Tool', prompt: 'Create a CLI tool with command flags' }
+            ],
+            rust: [
+                { title: 'HTTP Client', prompt: 'Create an async HTTP client with error handling' },
+                { title: 'File Parser', prompt: 'Parse a config file and return structured data' }
+            ],
+            batch: [
+                { title: 'Folder Backup', prompt: 'Create a batch script to backup folders with timestamp' },
+                { title: 'Service Monitor', prompt: 'Check if a Windows service is running and restart it' },
+                { title: 'Disk Cleanup', prompt: 'Clean temporary files and free disk space' }
             ]
         };
         
@@ -516,6 +561,14 @@
                 `<button class="template-btn" onclick="useTemplate('${t.prompt.replace(/'/g, "\\'")}')">${t.title}</button>`
             ).join('');
         }
+        
+        let templatesExpanded = false;
+        
+        document.getElementById('templateToggle').addEventListener('click', () => {
+            templatesExpanded = !templatesExpanded;
+            templatesContainer.classList.toggle('expanded', templatesExpanded);
+            document.getElementById('templateToggle').textContent = templatesExpanded ? 'Show less' : 'Show all';
+        });
         
         window.useTemplate = function(prompt) {
             promptInput.value = prompt;
