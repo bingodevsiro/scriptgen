@@ -280,6 +280,93 @@
         }
         
         footer a { color: var(--primary); text-decoration: none; }
+        
+        .templates-section { margin-bottom: 24px; }
+        
+        .templates {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .template-btn {
+            padding: 6px 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .template-btn:hover { border-color: var(--accent); color: var(--accent); }
+        
+        .search-row { margin-top: 12px; }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.875rem;
+        }
+        
+        .search-input:focus { outline: none; border-color: var(--primary); }
+        
+        .history-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-top: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .history-panel.show { display: block; }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .history-empty { text-align: center; padding: 24px; color: var(--text-secondary); font-size: 0.85rem; }
+        
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .history-item:hover { background: var(--bg); }
+        
+        .history-item-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        
+        .history-item-category {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            background: var(--primary);
+            color: var(--bg);
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+        
+        .history-item-date { font-size: 0.7rem; color: var(--text-secondary); }
+        
+        .history-item-prompt {
+            font-size: 0.8rem;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 <body>
@@ -287,11 +374,17 @@
         <header>
             <div class="logo">⚡ ScriptGen</div>
             <div class="header-controls">
+                <button class="icon-btn" id="historyBtn" title="History">📜</button>
                 <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
             </div>
         </header>
         
         <p class="tagline">Generate code scripts from AI-powered prompts</p>
+        
+        <div class="templates-section">
+            <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px;">📋 Quick Templates</h3>
+            <div class="templates" id="templates"></div>
+        </div>
         
         <div class="categories">
             <button class="category active" data-category="python">Python</button>
@@ -319,6 +412,10 @@
                 </div>
             </div>
             
+            <div class="search-row">
+                <input type="text" id="searchInput" placeholder="Search history..." class="search-input">
+            </div>
+            
             <div class="actions">
                 <button class="btn btn-primary" id="generateBtn">Generate Script</button>
                 <button class="btn btn-secondary" id="clearBtn">Clear</button>
@@ -342,6 +439,14 @@
                 </div>
                 <div class="code-block" id="codeOutput"></div>
             </div>
+        </div>
+        
+        <div class="history-panel" id="historyPanel">
+            <div class="history-header">
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">History</span>
+                <button class="action-btn" onclick="clearHistory()" style="padding: 4px 8px; font-size: 0.7rem;">Clear All</button>
+            </div>
+            <div id="historyList"></div>
         </div>
         
         <footer>
@@ -368,8 +473,93 @@
         const toast = document.getElementById('toast');
         const categories = document.querySelectorAll('.category');
         const modelSelect = document.getElementById('modelSelect');
+        const searchInput = document.getElementById('searchInput');
+        const templatesContainer = document.getElementById('templates');
+        const historyBtn = document.getElementById('historyBtn');
+        const historyPanel = document.getElementById('historyPanel');
+        const historyList = document.getElementById('historyList');
+        
+        // History toggle
+        historyBtn.addEventListener('click', () => {
+            historyPanel.classList.toggle('show');
+            if (historyPanel.classList.contains('show')) renderHistory();
+        });
         
         let selectedCategory = 'python';
+        let history = JSON.parse(localStorage.getItem('scriptgen_history') || '[]');
+        
+        // Templates
+        const templates = {
+            python: [
+                { title: 'CSV Reader', prompt: 'Read a CSV file and calculate statistics for each column' },
+                { title: 'API Client', prompt: 'Create a REST API client with error handling' },
+                { title: 'Web Scraper', prompt: 'Scrape data from a website using BeautifulSoup' }
+            ],
+            javascript: [
+                { title: 'Fetch API', prompt: 'Create a function that fetches data from an API with retry logic' },
+                { title: 'Array Utils', prompt: 'Common array manipulation functions (map, filter, reduce)' },
+                { title: 'Event Handler', prompt: 'Debounce and throttle event handlers' }
+            ],
+            bash: [
+                { title: 'Backup Script', prompt: 'Create a backup script that zips folders and deletes old backups' },
+                { title: 'System Info', prompt: 'Display system information (CPU, RAM, disk)' }
+            ],
+            sql: [
+                { title: 'CRUD Ops', prompt: 'Create a complete CRUD stored procedure' },
+                { title: 'Report Query', prompt: 'Monthly sales report with JOINs and aggregations' }
+            ]
+        };
+        
+        function renderTemplates() {
+            const cats = templates[selectedCategory] || [];
+            templatesContainer.innerHTML = cats.map(t => 
+                `<button class="template-btn" onclick="useTemplate('${t.prompt.replace(/'/g, "\\'")}')">${t.title}</button>`
+            ).join('');
+        }
+        
+        window.useTemplate = function(prompt) {
+            promptInput.value = prompt;
+            promptInput.focus();
+        };
+        
+        // History
+        function renderHistory() {
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="history-empty">No history yet</div>';
+                return;
+            }
+            historyList.innerHTML = history.map((item, i) => `
+                <div class="history-item" onclick="loadHistory(${i})">
+                    <div class="history-item-header">
+                        <span class="history-item-category">${item.category}</span>
+                        <span class="history-item-date">${item.date}</span>
+                    </div>
+                    <div class="history-item-prompt">${item.prompt.substring(0, 60)}...</div>
+                </div>
+            `).join('');
+        }
+        
+        window.loadHistory = function(index) {
+            const item = history[index];
+            promptInput.value = item.prompt;
+            categories.forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-category="${item.category}"]`)?.classList.add('active');
+            selectedCategory = item.category;
+            codeOutput.textContent = item.script;
+            output.classList.add('show');
+            historyPanel.classList.remove('show');
+        };
+        
+        window.clearHistory = function() {
+            history = [];
+            localStorage.setItem('scriptgen_history', '[]');
+            renderHistory();
+            showToast('History cleared');
+        };
+        
+        // Init
+        renderTemplates();
+        renderHistory();
         
         // Theme toggle
         let isDark = true;
@@ -394,8 +584,58 @@
                 categories.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 selectedCategory = btn.dataset.category;
+                renderTemplates();
             });
         });
+        
+        // Search history
+        searchInput.addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase();
+            if (!q) {
+                renderHistory();
+                return;
+            }
+            const filtered = history.filter(h => 
+                h.prompt.toLowerCase().includes(q) || 
+                h.category.toLowerCase().includes(q)
+            );
+            renderFilteredHistory(filtered);
+        });
+        
+        function renderFilteredHistory(items) {
+            if (items.length === 0) {
+                historyList.innerHTML = '<div class="history-empty">No results found</div>';
+                return;
+            }
+            historyList.innerHTML = items.map((item, i) => `
+                <div class="history-item" onclick="loadFilteredHistory(${i})">
+                    <div class="history-item-header">
+                        <span class="history-item-category">${item.category}</span>
+                        <span class="history-item-date">${item.date}</span>
+                    </div>
+                    <div class="history-item-prompt">${item.prompt.substring(0, 60)}...</div>
+                </div>
+            `).join('');
+        }
+        
+        window.loadFilteredHistory = function(index) {
+            const q = searchInput.value.toLowerCase();
+            const filtered = history.filter(h => 
+                h.prompt.toLowerCase().includes(q) || 
+                h.category.toLowerCase().includes(q)
+            );
+            const item = filtered[index];
+            if (item) {
+                promptInput.value = item.prompt;
+                categories.forEach(b => b.classList.remove('active'));
+                document.querySelector(`[data-category="${item.category}"]`)?.classList.add('active');
+                selectedCategory = item.category;
+                codeOutput.textContent = item.script;
+                output.classList.add('show');
+                historyPanel.classList.remove('show');
+                searchInput.value = '';
+            }
+        };
         
         // Show toast
         function showToast(msg) {
@@ -430,6 +670,17 @@
                 const data = await response.json();
                 codeOutput.textContent = data.script || '// Generated script will appear here';
                 output.classList.add('show');
+                
+                // Save to history
+                const historyItem = {
+                    prompt: prompt,
+                    category: selectedCategory,
+                    script: data.script || '',
+                    date: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+                };
+                history.unshift(historyItem);
+                if (history.length > 50) history.pop();
+                localStorage.setItem('scriptgen_history', JSON.stringify(history));
             } catch (error) {
                 codeOutput.textContent = '// Error generating script. Please try again.';
                 output.classList.add('show');
