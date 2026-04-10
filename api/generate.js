@@ -40,7 +40,7 @@ export default async function handler(req, res) {
           { role: 'user', content: `Write a complete, working script based on this request: ${prompt}. Only output the code, no explanations.` }
         ],
         temperature: 0.7,
-        max_tokens: 2048,
+        max_tokens: 4096,
       }),
     });
 
