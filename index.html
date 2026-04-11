@@ -227,6 +227,8 @@
         .action-btn.share { border-color: var(--accent); color: var(--accent); }
         .action-btn.share:hover { background: var(--accent); color: white; }
         
+        .action-btn.fav-active { border-color: var(--warning); color: var(--warning); }
+        
         .code-block {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -458,6 +460,7 @@
                         <button class="action-btn" id="downloadBtn">Download</button>
                         <button class="action-btn" id="exportMdBtn">Markdown</button>
                         <button class="action-btn" id="exportPdfBtn">PDF</button>
+                        <button class="action-btn" id="favBtn">♡ Favorite</button>
                         <button class="action-btn share" id="shareBtn">Share</button>
                     </div>
                 </div>
@@ -468,7 +471,10 @@
         <div class="history-panel" id="historyPanel">
             <div class="history-header">
                 <span style="font-size: 0.85rem; color: var(--text-secondary);">History</span>
-                <button class="action-btn" onclick="clearHistory()" style="padding: 4px 8px; font-size: 0.7rem;">Clear All</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="action-btn" id="favToggleBtn" style="padding: 4px 8px; font-size: 0.7rem;">♡ Favorites</button>
+                    <button class="action-btn" onclick="clearHistory()" style="padding: 4px 8px; font-size: 0.7rem;">Clear All</button>
+                </div>
             </div>
             <div id="historyList"></div>
         </div>
@@ -493,6 +499,7 @@
         const shareBtn = document.getElementById('shareBtn');
         const exportMdBtn = document.getElementById('exportMdBtn');
         const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const favBtn = document.getElementById('favBtn');
         const themeBtn = document.getElementById('themeBtn');
         const toast = document.getElementById('toast');
         const categories = document.querySelectorAll('.category');
@@ -503,13 +510,92 @@
         const historyPanel = document.getElementById('historyPanel');
         const historyList = document.getElementById('historyList');
         
+        const favToggleBtn = document.getElementById('favToggleBtn');
+        
+        // Favorites toggle
+        favToggleBtn.addEventListener('click', () => {
+            showingFavorites = !showingFavorites;
+            if (showingFavorites) {
+                historyList.innerHTML = '<div class="history-empty">Loading...</div>';
+                renderFavorites();
+                favToggleBtn.textContent = '← History';
+            } else {
+                renderHistory();
+                favToggleBtn.textContent = '♡ Favorites';
+            }
+        });
+        
         // History toggle
         historyBtn.addEventListener('click', () => {
             historyPanel.classList.toggle('show');
-            if (historyPanel.classList.contains('show')) renderHistory();
+            if (historyPanel.classList.contains('show')) {
+                showingFavorites = false;
+                favToggleBtn.textContent = '♡ Favorites';
+                renderHistory();
+            }
         });
         
         let selectedCategory = 'python';
+        let favorites = JSON.parse(localStorage.getItem('scriptgen_favorites') || '[]');
+        let showingFavorites = false;
+        
+        function updateFavButton() {
+            const code = codeOutput.textContent;
+            const isFav = favorites.some(f => f.script === code);
+            favBtn.classList.toggle('fav-active', isFav);
+            favBtn.textContent = isFav ? '♥ Favorited' : '♡ Favorite';
+        }
+        
+        favBtn.addEventListener('click', () => {
+            const code = codeOutput.textContent;
+            const prompt = promptInput.value.trim();
+            const existingIndex = favorites.findIndex(f => f.script === code);
+            
+            if (existingIndex > -1) {
+                favorites.splice(existingIndex, 1);
+                showToast('Removed from favorites');
+            } else {
+                favorites.unshift({
+                    prompt, category: selectedCategory, script: code,
+                    date: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+                });
+                if (favorites.length > 20) favorites.pop();
+                showToast('Added to favorites');
+            }
+            localStorage.setItem('scriptgen_favorites', JSON.stringify(favorites));
+            updateFavButton();
+            if (showingFavorites) renderFavorites();
+        });
+        
+        function renderFavorites() {
+            if (favorites.length === 0) {
+                historyList.innerHTML = '<div class="history-empty">No favorites yet</div>';
+                return;
+            }
+            historyList.innerHTML = favorites.map((item, i) => `
+                <div class="history-item" onclick="loadFavorite(${i})">
+                    <div class="history-item-header">
+                        <span class="history-item-category">${item.category}</span>
+                        <span class="history-item-date">${item.date}</span>
+                    </div>
+                    <div class="history-item-prompt">${item.prompt.substring(0, 60)}...</div>
+                </div>
+            `).join('');
+        }
+        
+        window.loadFavorite = function(index) {
+            const item = favorites[index];
+            promptInput.value = item.prompt;
+            categories.forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-category="${item.category}"]`)?.classList.add('active');
+            selectedCategory = item.category;
+            codeOutput.textContent = item.script;
+            output.classList.add('show');
+            historyPanel.classList.remove('show');
+            showingFavorites = false;
+            updateFavButton();
+        };
+        
         let history = JSON.parse(localStorage.getItem('scriptgen_history') || '[]');
         
         // Templates
@@ -756,6 +842,7 @@
                 const data = await response.json();
                 codeOutput.textContent = data.script || '// Generated script will appear here';
                 output.classList.add('show');
+                updateFavButton();
                 
                 // Save to history
                 const historyItem = {
