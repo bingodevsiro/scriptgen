@@ -10,8 +10,8 @@ export default async function handler(req, res) {
   // Model definitions
   const MODELS = {
     'groq-llama-3.3-70b': { provider: 'groq', name: 'llama-3.3-70b-versatile' },
-    'groq-llama-3.1-70b': { provider: 'groq', name: 'llama-3.1-70b-versatile' },
-    'groq-mixtral-8x7b': { provider: 'groq', name: 'mixtral-8x7b-32768' },
+    'groq-llama-3.1-8b': { provider: 'groq', name: 'llama-3.1-8b-instant' },
+    'groq-qwen-32b': { provider: 'groq', name: 'qwen/qwen3-32b' },
     'gemini-2.5-flash': { provider: 'gemini', name: 'gemini-2.5-flash' },
   };
 
