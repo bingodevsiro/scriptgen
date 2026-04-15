@@ -13,8 +13,6 @@ export default async function handler(req, res) {
     'groq-llama-3.1-70b': { provider: 'groq', name: 'llama-3.1-70b-versatile' },
     'groq-mixtral-8x7b': { provider: 'groq', name: 'mixtral-8x7b-32768' },
     'gemini-2.5-flash': { provider: 'gemini', name: 'gemini-2.5-flash' },
-    'gemini-1.5-flash': { provider: 'gemini', name: 'gemini-1.5-flash' },
-    'gemini-1.5-pro': { provider: 'gemini', name: 'gemini-1.5-pro' },
   };
 
   const CATEGORY_PROMPTS = {
