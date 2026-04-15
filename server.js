@@ -1,8 +1,10 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const fetch = require('node-fetch');
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const MIME_TYPES = {
     '.html': 'text/html',
@@ -13,11 +15,40 @@ const MIME_TYPES = {
     '.jpg': 'image/jpeg',
 };
 
-// Model mapping
+// Model definitions
 const MODELS = {
-    'llama-3.3-70b-versatile': 'llama-3.3-70b-versatile',
-    'llama-3.1-70b-versatile': 'llama-3.1-70b-versatile',
-    'mixtral-8x7b-32768': 'mixtral-8x7b-32768'
+    // Groq models
+    'groq-llama-3.3-70b': {
+        provider: 'groq',
+        name: 'llama-3.3-70b-versatile',
+        label: 'Llama 3.3 70B (Groq)'
+    },
+    'groq-llama-3.1-70b': {
+        provider: 'groq',
+        name: 'llama-3.1-70b-versatile',
+        label: 'Llama 3.1 70B (Groq)'
+    },
+    'groq-mixtral-8x7b': {
+        provider: 'groq',
+        name: 'mixtral-8x7b-32768',
+        label: 'Mixtral 8x7B (Groq)'
+    },
+    // Gemini models
+    'gemini-2.0-flash': {
+        provider: 'gemini',
+        name: 'gemini-2.0-flash',
+        label: 'Gemini 2.0 Flash'
+    },
+    'gemini-1.5-flash': {
+        provider: 'gemini',
+        name: 'gemini-1.5-flash',
+        label: 'Gemini 1.5 Flash'
+    },
+    'gemini-1.5-pro': {
+        provider: 'gemini',
+        name: 'gemini-1.5-pro',
+        label: 'Gemini 1.5 Pro'
+    }
 };
 
 // Category system prompts
@@ -34,45 +65,89 @@ const CATEGORY_PROMPTS = {
     general: 'You are a helpful coding assistant. Generate clean, working code.'
 };
 
-async function generateScript(prompt, category, model) {
+// Groq API call
+async function generateWithGroq(prompt, category, model) {
     const systemPrompt = CATEGORY_PROMPTS[category] || CATEGORY_PROMPTS.general;
-    const modelToUse = MODELS[model] || 'llama-3.3-70b-versatile';
+    
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${GROQ_API_KEY}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            model: model,
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: `Write a complete, working script based on this request: ${prompt}\n\nRequirements:\n- The code should be clean, well-commented, and production-ready\n- Only output the code, no explanations\n- Include proper error handling` }
+            ],
+            temperature: 0.7,
+            max_tokens: 2048,
+        }),
+    });
 
-    try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${GROQ_API_KEY}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: modelToUse,
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: `Write a complete, working script based on this request: ${prompt}\n\nRequirements:\n- The code should be clean, well-commented, and production-ready\n- Only output the code, no explanations\n- Include proper error handling` }
-                ],
-                temperature: 0.7,
-                max_tokens: 2048,
-            }),
-        });
-
-        if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.error?.message || `API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const content = data.choices?.[0]?.message?.content;
-        
-        if (!content) {
-            throw new Error('No response from AI model');
-        }
-        
-        return content;
-    } catch (error) {
-        console.error('Groq API error:', error);
-        throw error;
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || `Groq API error: ${response.status}`);
     }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || '';
+}
+
+// Gemini API call
+async function generateWithGemini(prompt, category, model) {
+    const systemPrompt = CATEGORY_PROMPTS[category] || CATEGORY_PROMPTS.general;
+    
+    const fullPrompt = `${systemPrompt}\n\nWrite a complete, working script based on this request: ${prompt}\n\nRequirements:\n- The code should be clean, well-commented, and production-ready\n- Only output the code, no explanations\n- Include proper error handling`;
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            contents: [{
+                parts: [{ text: fullPrompt }]
+            }],
+            generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 2048,
+            }
+        }),
+    });
+
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || `Gemini API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    return content || '';
+}
+
+// Main generate function
+async function generateScript(prompt, category, modelKey) {
+    const modelConfig = MODELS[modelKey];
+    
+    if (!modelConfig) {
+        throw new Error('Invalid model selected');
+    }
+
+    if (modelConfig.provider === 'groq') {
+        if (!GROQ_API_KEY) {
+            throw new Error('Groq API key not configured');
+        }
+        return await generateWithGroq(prompt, category, modelConfig.name);
+    } else if (modelConfig.provider === 'gemini') {
+        if (!GEMINI_API_KEY) {
+            throw new Error('Gemini API key not configured');
+        }
+        return await generateWithGemini(prompt, category, modelConfig.name);
+    }
+
+    throw new Error('Unknown model provider');
 }
 
 const server = http.createServer(async (req, res) => {
@@ -100,7 +175,13 @@ const server = http.createServer(async (req, res) => {
                     return;
                 }
                 
-                const script = await generateScript(prompt, category || 'general', model || 'llama-3.3-70b-versatile');
+                if (!model) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'Model is required' }));
+                    return;
+                }
+                
+                const script = await generateScript(prompt, category || 'general', model);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ script }));
             } catch (error) {
@@ -112,10 +193,19 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
+    if (req.method === 'GET' && req.url === '/api/models') {
+        const modelsList = Object.entries(MODELS).map(([key, config]) => ({
+            key,
+            label: config.label,
+            provider: config.provider
+        }));
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ models: modelsList }));
+        return;
+    }
+
     // Serve static files
     let filePath = req.url === '/' ? '/index.html' : req.url;
-    
-    // Remove query string for file serving
     filePath = filePath.split('?')[0];
     filePath = path.join(__dirname, filePath);
 
