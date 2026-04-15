@@ -7,22 +7,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet">
     <style>
         :root {
             --bg: #0D0D0D;
             --surface: #1A1A1A;
+            --surface-hover: #222222;
             --border: #2A2A2A;
             --primary: #10B981;
             --primary-hover: #059669;
             --text: #FAFAFA;
             --text-secondary: #A1A1AA;
             --accent: #6366F1;
+            --accent-hover: #4F46E5;
             --warning: #F59E0B;
+            --error: #EF4444;
+            --success: #10B981;
         }
         
         [data-theme="light"] {
             --bg: #FAFAFA;
             --surface: #FFFFFF;
+            --surface-hover: #F4F4F5;
             --border: #E4E4E7;
             --text: #18181B;
             --text-secondary: #71717A;
@@ -36,25 +43,33 @@
             color: var(--text);
             min-height: 100vh;
             line-height: 1.6;
-            transition: all 0.3s;
+            transition: background 0.3s, color 0.3s;
         }
         
-        .container { max-width: 800px; margin: 0 auto; padding: 24px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 24px; }
         
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 32px 0;
+            padding: 32px 0 24px;
         }
         
         .logo {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.02em;
+        }
+        
+        .logo-sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-top: 4px;
         }
         
         .header-controls { display: flex; gap: 8px; }
@@ -67,7 +82,7 @@
             background: var(--surface);
             color: var(--text-secondary);
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -75,25 +90,77 @@
         }
         
         .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .icon-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(99, 102, 241, 0.1); }
         
-        .tagline { color: var(--text-secondary); margin-bottom: 24px; }
+        .tagline { 
+            color: var(--text-secondary); 
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
         
-        .categories {
+        .templates-section { margin-bottom: 20px; }
+        
+        .templates {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-            margin-bottom: 24px;
         }
         
-        .category {
-            padding: 8px 16px;
+        .template-btn {
+            padding: 6px 12px;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            font-size: 0.875rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
             color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.2s;
+            font-family: inherit;
+        }
+        
+        .template-btn:hover { border-color: var(--accent); color: var(--accent); }
+        
+        .templates-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .templates-header h3 { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
+        
+        .template-toggle {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-family: inherit;
+        }
+        
+        .template-toggle:hover { text-decoration: underline; }
+        
+        .templates:not(.expanded) .template-btn:nth-child(n+4) { display: none; }
+        .templates.expanded .template-btn { display: inline-block; }
+        
+        .categories {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .category {
+            padding: 8px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
         }
         
         .category:hover, .category.active {
@@ -111,20 +178,28 @@
         
         textarea {
             width: 100%;
-            min-height: 150px;
+            min-height: 120px;
             background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px 16px;
             color: var(--text);
             font-family: 'Geist', system-ui, sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
             resize: vertical;
             transition: border-color 0.2s;
+            line-height: 1.5;
         }
         
         textarea:focus { outline: none; border-color: var(--primary); }
         textarea::placeholder { color: var(--text-secondary); }
+        
+        .input-hint {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            text-align: right;
+        }
         
         .options-row {
             display: flex;
@@ -142,7 +217,8 @@
             display: block;
             font-size: 0.75rem;
             color: var(--text-secondary);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 500;
         }
         
         select {
@@ -154,7 +230,11 @@
             color: var(--text);
             font-size: 0.875rem;
             cursor: pointer;
+            font-family: inherit;
+            transition: border-color 0.2s;
         }
+        
+        select:focus { outline: none; border-color: var(--primary); }
         
         .actions {
             display: flex;
@@ -166,11 +246,12 @@
             flex: 1;
             padding: 14px 24px;
             border-radius: 12px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             border: none;
+            font-family: inherit;
         }
         
         .btn-primary {
@@ -178,7 +259,8 @@
             color: var(--bg);
         }
         
-        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .btn-secondary {
             background: transparent;
@@ -188,9 +270,33 @@
         
         .btn-secondary:hover { color: var(--text); border-color: var(--text-secondary); }
         
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* Loading state */
+        .loading { 
+            display: none; 
+            text-align: center; 
+            padding: 32px; 
+            color: var(--text-secondary);
+        }
         
-        .output { margin-top: 24px; display: none; }
+        .loading.show { display: block; }
+        
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .loading-text { font-size: 0.85rem; }
+        .loading-model { font-size: 0.75rem; color: var(--accent); margin-top: 4px; }
+        
+        /* Output */
+        .output { margin-top: 20px; display: none; }
         .output.show { display: block; animation: fadeIn 0.3s ease; }
         
         @keyframes fadeIn {
@@ -207,9 +313,24 @@
             gap: 8px;
         }
         
-        .output-label { color: var(--text-secondary); font-size: 0.875rem; }
+        .output-label { 
+            color: var(--text-secondary); 
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
         
-        .output-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .output-label .badge {
+            padding: 2px 8px;
+            background: var(--primary);
+            color: var(--bg);
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .output-actions { display: flex; gap: 6px; flex-wrap: wrap; }
         
         .action-btn {
             padding: 6px 12px;
@@ -217,45 +338,160 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text-secondary);
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
         .action-btn:hover { border-color: var(--primary); color: var(--primary); }
+        
+        .action-btn.copied { border-color: var(--success); color: var(--success); }
         
         .action-btn.share { border-color: var(--accent); color: var(--accent); }
         .action-btn.share:hover { background: var(--accent); color: white; }
         
         .action-btn.fav-active { border-color: var(--warning); color: var(--warning); }
         
-        .code-block {
+        /* Code block with Prism */
+        .code-wrapper {
             background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 16px;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .code-lang {
             font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            font-weight: 500;
+            color: var(--accent);
+        }
+        
+        .code-lines { font-family: 'JetBrains Mono', monospace; color: var(--text-secondary); }
+        
+        pre[class*="language-"] {
+            margin: 0 !important;
+            border-radius: 0 !important;
+            background: var(--bg) !important;
+            padding: 16px !important;
+            font-size: 0.85rem !important;
+            line-height: 1.6 !important;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        code[class*="language-"] {
+            font-family: 'JetBrains Mono', monospace !important;
+            background: none !important;
+        }
+        
+        /* Error state */
+        .error-output {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--error);
             font-size: 0.875rem;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            color: #E4E4E7;
         }
         
-        .loading { display: none; text-align: center; padding: 40px; color: var(--text-secondary); }
-        .loading.show { display: block; }
+        .error-output strong { display: block; margin-bottom: 4px; }
         
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
+        /* Search & History */
+        .search-row { margin-top: 12px; }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.875rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
         }
         
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .search-input:focus { outline: none; border-color: var(--primary); }
         
+        .history-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-top: 12px;
+            max-height: 350px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .history-panel.show { display: block; }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            z-index: 1;
+        }
+        
+        .history-header-title { font-size: 0.8rem; color: var(--text-secondary); }
+        
+        .history-header-actions { display: flex; gap: 6px; }
+        
+        .history-empty { text-align: center; padding: 28px; color: var(--text-secondary); font-size: 0.85rem; }
+        
+        .history-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .history-item:hover { background: var(--surface-hover); }
+        .history-item:last-child { border-bottom: none; }
+        
+        .history-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        
+        .history-item-category {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            background: var(--primary);
+            color: var(--bg);
+            border-radius: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .history-item-date { font-size: 0.7rem; color: var(--text-secondary); }
+        
+        .history-item-prompt {
+            font-size: 0.8rem;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -270,143 +506,53 @@
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 1000;
+            pointer-events: none;
         }
         
         .toast.show { opacity: 1; }
+        .toast.error { border-color: var(--error); color: var(--error); }
         
+        /* Footer */
         footer {
             text-align: center;
-            padding: 48px 0;
+            padding: 40px 0 24px;
             color: var(--text-secondary);
-            font-size: 0.875rem;
+            font-size: 0.8rem;
         }
         
         footer a { color: var(--primary); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
         
-        .templates-section { margin-bottom: 24px; }
-        
-        .templates {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .template-btn {
-            padding: 6px 12px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .template-btn:hover { border-color: var(--accent); color: var(--accent); }
-        
-        .templates-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .template-toggle {
-            background: none;
-            border: none;
-            color: var(--accent);
-            font-size: 0.8rem;
-            cursor: pointer;
-            padding: 4px 8px;
-        }
-        
-        .template-toggle:hover { text-decoration: underline; }
-        
-        .templates.expanded .template-btn { display: inline-block; }
-        .templates:not(.expanded) .template-btn:nth-child(n+4) { display: none; }
-        
-        .search-row { margin-top: 12px; }
-        
-        .search-input {
-            width: 100%;
-            padding: 10px 12px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 0.875rem;
-        }
-        
-        .search-input:focus { outline: none; border-color: var(--primary); }
-        
-        .history-panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            margin-top: 12px;
-            max-height: 300px;
-            overflow-y: auto;
-            display: none;
-        }
-        
-        .history-panel.show { display: block; }
-        
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .history-empty { text-align: center; padding: 24px; color: var(--text-secondary); font-size: 0.85rem; }
-        
-        .history-item {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .history-item:hover { background: var(--bg); }
-        
-        .history-item-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        
-        .history-item-category {
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            background: var(--primary);
-            color: var(--bg);
-            border-radius: 10px;
-            text-transform: uppercase;
-        }
-        
-        .history-item-date { font-size: 0.7rem; color: var(--text-secondary); }
-        
-        .history-item-prompt {
-            font-size: 0.8rem;
-            color: var(--text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container { padding: 16px; }
+            .main-card { padding: 16px; }
+            .actions { flex-direction: column; }
+            .btn { width: 100%; }
+            .options-row { flex-direction: column; }
+            .output-actions { width: 100%; }
+            .action-btn { flex: 1; justify-content: center; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="logo">⚡ ScriptGen</div>
+            <div>
+                <div class="logo">⚡ ScriptGen</div>
+                <div class="logo-sub">AI-powered code script generator</div>
+            </div>
             <div class="header-controls">
                 <button class="icon-btn" id="historyBtn" title="History">📜</button>
                 <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
             </div>
         </header>
         
-        <p class="tagline">Generate code scripts from AI-powered prompts</p>
+        <p class="tagline">Generate clean, working code scripts from natural language prompts</p>
         
         <div class="templates-section">
             <div class="templates-header">
-                <h3 style="font-size: 0.9rem; color: var(--text-secondary);">📋 Quick Templates</h3>
+                <h3>📋 Quick Templates</h3>
                 <button class="template-toggle" id="templateToggle">Show all</button>
             </div>
             <div class="templates" id="templates"></div>
@@ -425,15 +571,17 @@
         </div>
         
         <div class="main-card">
-            <textarea id="prompt" placeholder="Describe what script you need...&#10;&#10;Example: Create a Python script that reads a CSV file and calculates the average of a column"></textarea>
+            <textarea id="prompt" placeholder="Describe what script you need...&#10;&#10;Example: Create a Python script that reads a CSV file, calculates statistics for each numeric column, and outputs a summary report"></textarea>
+            
+            <div class="input-hint">Press Ctrl+Enter to generate</div>
             
             <div class="options-row">
                 <div class="select-wrapper">
-                    <label>Model</label>
+                    <label>AI Model</label>
                     <select id="modelSelect">
-                        <option value="llama-3.3-70b-versatile">Llama 3.3 (fast)</option>
-                        <option value="llama-3.1-70b-versatile">Llama 3.1 (balanced)</option>
-                        <option value="mixtral-8x7b-32768">Mixtral (creative)</option>
+                        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Recommended)</option>
+                        <option value="llama-3.1-70b-versatile">Llama 3.1 70B (Balanced)</option>
+                        <option value="mixtral-8x7b-32768">Mixtral 8x7B (Creative)</option>
                     </select>
                 </div>
             </div>
@@ -443,62 +591,92 @@
             </div>
             
             <div class="actions">
-                <button class="btn btn-primary" id="generateBtn">Generate Script</button>
+                <button class="btn btn-primary" id="generateBtn">⚡ Generate Script</button>
                 <button class="btn btn-secondary" id="clearBtn">Clear</button>
             </div>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>Generating your script...</p>
+                <div class="loading-text">Generating your script...</div>
+                <div class="loading-model" id="loadingModel"></div>
             </div>
             
             <div class="output" id="output">
                 <div class="output-header">
-                    <span class="output-label">Generated Script</span>
+                    <span class="output-label">
+                        Generated Script
+                        <span class="badge" id="outputCategory">Python</span>
+                    </span>
                     <div class="output-actions">
-                        <button class="action-btn" id="copyBtn">Copy</button>
-                        <button class="action-btn" id="downloadBtn">Download</button>
-                        <button class="action-btn" id="exportMdBtn">Markdown</button>
-                        <button class="action-btn" id="exportPdfBtn">PDF</button>
+                        <button class="action-btn" id="copyBtn">📋 Copy</button>
+                        <button class="action-btn" id="downloadBtn">💾 Download</button>
+                        <button class="action-btn" id="exportMdBtn">📝 Markdown</button>
                         <button class="action-btn" id="favBtn">♡ Favorite</button>
-                        <button class="action-btn share" id="shareBtn">Share</button>
+                        <button class="action-btn share" id="shareBtn">🔗 Share</button>
                     </div>
                 </div>
-                <div class="code-block" id="codeOutput"></div>
+                <div class="code-wrapper">
+                    <div class="code-header">
+                        <span class="code-lang" id="codeLang">python</span>
+                        <span class="code-lines" id="codeLines">0 lines</span>
+                    </div>
+                    <pre class="line-numbers"><code class="language-python" id="codeOutput"></code></pre>
+                </div>
+            </div>
+            
+            <div class="error-output" id="errorOutput" style="display: none;">
+                <strong>⚠️ Error</strong>
+                <div id="errorMessage"></div>
             </div>
         </div>
         
         <div class="history-panel" id="historyPanel">
             <div class="history-header">
-                <span style="font-size: 0.85rem; color: var(--text-secondary);">History</span>
-                <div style="display: flex; gap: 8px;">
+                <span class="history-header-title">History</span>
+                <div class="history-header-actions">
                     <button class="action-btn" id="favToggleBtn" style="padding: 4px 8px; font-size: 0.7rem;">♡ Favorites</button>
-                    <button class="action-btn" onclick="clearHistory()" style="padding: 4px 8px; font-size: 0.7rem;">Clear All</button>
+                    <button class="action-btn" id="clearHistoryBtn" style="padding: 4px 8px; font-size: 0.7rem;">Clear All</button>
                 </div>
             </div>
             <div id="historyList"></div>
         </div>
         
         <footer>
-            <p>Built with AI • Free to use</p>
+            <p>Powered by Groq AI • Free to use • <a href="https://github.com/bingodevsiro/scriptgen" target="_blank">View Source</a></p>
         </footer>
     </div>
     
     <div class="toast" id="toast"></div>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-batch.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
+        // Elements
         const promptInput = document.getElementById('prompt');
         const generateBtn = document.getElementById('generateBtn');
         const clearBtn = document.getElementById('clearBtn');
         const loading = document.getElementById('loading');
+        const loadingModel = document.getElementById('loadingModel');
         const output = document.getElementById('output');
+        const errorOutput = document.getElementById('errorOutput');
+        const errorMessage = document.getElementById('errorMessage');
         const codeOutput = document.getElementById('codeOutput');
+        const codeLang = document.getElementById('codeLang');
+        const codeLines = document.getElementById('codeLines');
         const copyBtn = document.getElementById('copyBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const shareBtn = document.getElementById('shareBtn');
         const exportMdBtn = document.getElementById('exportMdBtn');
-        const exportPdfBtn = document.getElementById('exportPdfBtn');
         const favBtn = document.getElementById('favBtn');
         const themeBtn = document.getElementById('themeBtn');
         const toast = document.getElementById('toast');
@@ -509,36 +687,131 @@
         const historyBtn = document.getElementById('historyBtn');
         const historyPanel = document.getElementById('historyPanel');
         const historyList = document.getElementById('historyList');
-        
         const favToggleBtn = document.getElementById('favToggleBtn');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        const outputCategory = document.getElementById('outputCategory');
         
-        // Favorites toggle
-        favToggleBtn.addEventListener('click', () => {
-            showingFavorites = !showingFavorites;
-            if (showingFavorites) {
-                historyList.innerHTML = '<div class="history-empty">Loading...</div>';
-                renderFavorites();
-                favToggleBtn.textContent = '← History';
-            } else {
-                renderHistory();
-                favToggleBtn.textContent = '♡ Favorites';
-            }
-        });
-        
-        // History toggle
-        historyBtn.addEventListener('click', () => {
-            historyPanel.classList.toggle('show');
-            if (historyPanel.classList.contains('show')) {
-                showingFavorites = false;
-                favToggleBtn.textContent = '♡ Favorites';
-                renderHistory();
-            }
-        });
-        
+        // State
         let selectedCategory = 'python';
         let favorites = JSON.parse(localStorage.getItem('scriptgen_favorites') || '[]');
+        let history = JSON.parse(localStorage.getItem('scriptgen_history') || '[]');
         let showingFavorites = false;
+        let isDark = true;
         
+        // Language map for Prism
+        const langMap = {
+            python: 'python',
+            javascript: 'javascript',
+            bash: 'bash',
+            go: 'go',
+            rust: 'rust',
+            sql: 'sql',
+            docker: 'docker',
+            batch: 'batch',
+            api: 'javascript'
+        };
+        
+        // Templates
+        const templates = {
+            python: [
+                { title: 'CSV Reader', prompt: 'Read a CSV file and calculate statistics for each column' },
+                { title: 'API Client', prompt: 'Create a REST API client with error handling and retry logic' },
+                { title: 'Web Scraper', prompt: 'Scrape data from a website using requests and BeautifulSoup' },
+                { title: 'JSON Parser', prompt: 'Parse and transform JSON data with validation using Pydantic' },
+                { title: 'File Organizer', prompt: 'Organize files in a directory by type or date modified' },
+                { title: 'Email Sender', prompt: 'Send emails with attachments using SMTP with TLS' },
+                { title: 'Image Resizer', prompt: 'Resize images maintaining aspect ratio using Pillow (PIL)' },
+                { title: 'DB Connector', prompt: 'Connect to PostgreSQL and execute queries safely' },
+                { title: 'Logger Setup', prompt: 'Set up structured logging with rotation and multiple handlers' },
+                { title: 'Async HTTP', prompt: 'Create async HTTP client with aiohttp and connection pooling' }
+            ],
+            javascript: [
+                { title: 'Fetch API', prompt: 'Create a function that fetches data from an API with retry and timeout' },
+                { title: 'Array Utils', prompt: 'Common array manipulation functions: groupBy, sortBy, chunk' },
+                { title: 'Event Handler', prompt: 'Debounce and throttle utility functions with cancel support' },
+                { title: 'Local Storage', prompt: 'Typed wrapper for localStorage with JSON serialization and expiry' },
+                { title: 'Form Validator', prompt: 'Validate form inputs with custom regex patterns and error messages' },
+                { title: 'Date Formatter', prompt: 'Format dates in multiple locales with timezone support' },
+                { title: 'Color Converter', prompt: 'Convert between HEX, RGB, HSL, and CSS color formats' },
+                { title: 'URL Parser', prompt: 'Parse, validate and manipulate URLs with query parameters' },
+                { title: 'Async Queue', prompt: 'Manage concurrent async operations with a queue and concurrency limit' },
+                { title: 'Deep Clone', prompt: 'Deep clone objects handling circular references and special types' }
+            ],
+            bash: [
+                { title: 'Backup Script', prompt: 'Create a backup script that zips folders, encrypts and uploads to S3' },
+                { title: 'System Info', prompt: 'Display system information: CPU, RAM, disk usage, and processes' },
+                { title: 'Log Monitor', prompt: 'Monitor a log file in real-time and alert on keywords via email' },
+                { title: 'Docker Cleanup', prompt: 'Clean up unused Docker containers, images, and volumes' },
+                { title: 'Git Auto-commit', prompt: 'Auto-add and commit changes with timestamp and conventional commits' },
+                { title: 'Server Health', prompt: 'Check server health endpoints and send alerts if down' },
+                { title: 'File Finder', prompt: 'Find files by name, size, or date with parallel search' },
+                { title: 'Cron Manager', prompt: 'List, add, remove and backup cron jobs safely' }
+            ],
+            sql: [
+                { title: 'CRUD Procedure', prompt: 'Create a complete CRUD stored procedure with transaction handling' },
+                { title: 'Report Query', prompt: 'Monthly sales report with JOINs, aggregations, and running totals' },
+                { title: 'Data Migration', prompt: 'Migrate data between tables with data type transformations' },
+                { title: 'Index Optimizer', prompt: 'Analyze slow queries and create recommended indexes' },
+                { title: 'Backup Table', prompt: 'Create a backup of a table before major changes with audit trail' },
+                { title: 'Partition Manager', prompt: 'Manage table partitions for better query performance' }
+            ],
+            go: [
+                { title: 'HTTP Server', prompt: 'Create a simple HTTP server with routing, middleware, and graceful shutdown' },
+                { title: 'CLI Tool', prompt: 'Create a CLI tool with command flags, subcommands, and config file' },
+                { title: 'JSON Handler', prompt: 'Parse, validate and generate JSON files with custom types' },
+                { title: 'File Watcher', prompt: 'Watch files and directories for changes with debouncing' },
+                { title: 'Concurrent Map', prompt: 'Thread-safe concurrent map with atomic operations' }
+            ],
+            rust: [
+                { title: 'HTTP Client', prompt: 'Create an async HTTP client with reqwest and error handling' },
+                { title: 'File Parser', prompt: 'Parse a TOML config file and return structured data' },
+                { title: 'CSV Reader', prompt: 'Read and process large CSV files with streaming and validation' },
+                { title: 'JSON Transform', prompt: 'Transform JSON data structures using serde with performance' }
+            ],
+            batch: [
+                { title: 'Folder Backup', prompt: 'Create a batch script to backup folders with timestamp and compression' },
+                { title: 'Service Monitor', prompt: 'Check if a Windows service is running and restart it if stopped' },
+                { title: 'Disk Cleanup', prompt: 'Clean temporary files, browser caches, and free disk space' },
+                { title: 'File Search', prompt: 'Search for files by name recursively with multiple search paths' }
+            ],
+            docker: [
+                { title: 'Node App', prompt: 'Create an optimized Dockerfile for a Node.js application with multi-stage build' },
+                { title: 'Python App', prompt: 'Create a Dockerfile for a Python app with virtual environment and requirements' },
+                { title: 'Multi-Container', prompt: 'Create docker-compose with app, database, redis and networking' },
+                { title: 'Nginx Proxy', prompt: 'Set up Nginx as reverse proxy with SSL, caching, and rate limiting' },
+                { title: 'PostgreSQL Setup', prompt: 'Docker compose for PostgreSQL with persistent volume and initialization scripts' },
+                { title: 'MongoDB Setup', prompt: 'Docker compose for MongoDB with authentication and backup strategy' }
+            ],
+            api: [
+                { title: 'REST CRUD', prompt: 'Create a REST API with CRUD endpoints, validation, and error handling' },
+                { title: 'Auth Middleware', prompt: 'Add JWT authentication middleware with token refresh' },
+                { title: 'Rate Limiter', prompt: 'Add rate limiting to an API with sliding window algorithm' },
+                { title: 'Swagger Docs', prompt: 'Add Swagger/OpenAPI documentation to an Express API' },
+                { title: 'Error Handler', prompt: 'Create global error handling middleware with proper HTTP status codes' }
+            ]
+        };
+        
+        // Render templates
+        function renderTemplates() {
+            const cats = templates[selectedCategory] || [];
+            templatesContainer.innerHTML = cats.map(t => 
+                `<button class="template-btn" onclick="useTemplate('${t.prompt.replace(/'/g, "\\'")}')">${t.title}</button>`
+            ).join('');
+        }
+        
+        let templatesExpanded = false;
+        document.getElementById('templateToggle').addEventListener('click', () => {
+            templatesExpanded = !templatesExpanded;
+            templatesContainer.classList.toggle('expanded', templatesExpanded);
+            document.getElementById('templateToggle').textContent = templatesExpanded ? 'Show less' : 'Show all';
+        });
+        
+        window.useTemplate = function(prompt) {
+            promptInput.value = prompt;
+            promptInput.focus();
+        };
+        
+        // Favorites
         function updateFavButton() {
             const code = codeOutput.textContent;
             const isFav = favorites.some(f => f.script === code);
@@ -547,7 +820,8 @@
         }
         
         favBtn.addEventListener('click', () => {
-            const code = codeOutput.textContent;
+            const code = codeOutput.textContent.trim();
+            if (!code) return;
             const prompt = promptInput.value.trim();
             const existingIndex = favorites.findIndex(f => f.script === code);
             
@@ -569,7 +843,7 @@
         
         function renderFavorites() {
             if (favorites.length === 0) {
-                historyList.innerHTML = '<div class="history-empty">No favorites yet</div>';
+                historyList.innerHTML = '<div class="history-empty">No favorites yet. Generate a script and click the ❤️ button.</div>';
                 return;
             }
             historyList.innerHTML = favorites.map((item, i) => `
@@ -578,126 +852,24 @@
                         <span class="history-item-category">${item.category}</span>
                         <span class="history-item-date">${item.date}</span>
                     </div>
-                    <div class="history-item-prompt">${item.prompt.substring(0, 60)}...</div>
+                    <div class="history-item-prompt">${item.prompt.substring(0, 80)}${item.prompt.length > 80 ? '...' : ''}</div>
                 </div>
             `).join('');
         }
         
         window.loadFavorite = function(index) {
             const item = favorites[index];
-            promptInput.value = item.prompt;
-            categories.forEach(b => b.classList.remove('active'));
-            document.querySelector(`[data-category="${item.category}"]`)?.classList.add('active');
-            selectedCategory = item.category;
-            codeOutput.textContent = item.script;
-            output.classList.add('show');
+            loadHistoryItem(item);
             historyPanel.classList.remove('show');
+            historyBtn.classList.remove('active');
             showingFavorites = false;
-            updateFavButton();
-        };
-        
-        let history = JSON.parse(localStorage.getItem('scriptgen_history') || '[]');
-        
-        // Templates
-        const templates = {
-            python: [
-                { title: 'CSV Reader', prompt: 'Read a CSV file and calculate statistics for each column' },
-                { title: 'API Client', prompt: 'Create a REST API client with error handling' },
-                { title: 'Web Scraper', prompt: 'Scrape data from a website using BeautifulSoup' },
-                { title: 'JSON Parser', prompt: 'Parse and transform JSON data with validation' },
-                { title: 'File Organizer', prompt: 'Organize files in a directory by type or date' },
-                { title: 'Email Sender', prompt: 'Send emails with attachments using SMTP' },
-                { title: 'Image Resizer', prompt: 'Resize images maintaining aspect ratio using Pillow' },
-                { title: 'DB Connector', prompt: 'Connect to PostgreSQL and execute queries' },
-                { title: 'Excel Generator', prompt: 'Create Excel files with multiple sheets and formatting' },
-                { title: 'Logger Setup', prompt: 'Set up logging with rotation and multiple handlers' }
-            ],
-            javascript: [
-                { title: 'Fetch API', prompt: 'Create a function that fetches data from an API with retry logic' },
-                { title: 'Array Utils', prompt: 'Common array manipulation functions (map, filter, reduce)' },
-                { title: 'Event Handler', prompt: 'Debounce and throttle event handlers' },
-                { title: 'Local Storage', prompt: 'Wrapper for localStorage with JSON serialization' },
-                { title: 'Form Validator', prompt: 'Validate form inputs with regex patterns' },
-                { title: 'Date Formatter', prompt: 'Format dates in multiple locales' },
-                { title: 'Color Converter', prompt: 'Convert between HEX, RGB, HSL color formats' },
-                { title: 'URL Parser', prompt: 'Parse and manipulate URLs' }
-            ],
-            bash: [
-                { title: 'Backup Script', prompt: 'Create a backup script that zips folders and deletes old backups' },
-                { title: 'System Info', prompt: 'Display system information (CPU, RAM, disk)' },
-                { title: 'Log Monitor', prompt: 'Monitor a log file and alert on keywords' },
-                { title: 'Docker Cleanup', prompt: 'Clean up unused Docker containers and images' },
-                { title: 'Git Auto-commit', prompt: 'Auto-add and commit changes with timestamp' },
-                { title: 'Server Health', prompt: 'Check server health and send alerts' },
-                { title: 'File Finder', prompt: 'Find files by name, size or date' }
-            ],
-            sql: [
-                { title: 'CRUD Ops', prompt: 'Create a complete CRUD stored procedure' },
-                { title: 'Report Query', prompt: 'Monthly sales report with JOINs and aggregations' },
-                { title: 'Data Migration', prompt: 'Migrate data between tables with transformations' },
-                { title: 'Index Optimizer', prompt: 'Create indexes for query optimization' },
-                { title: 'Backup Table', prompt: 'Backup a table before major changes' }
-            ],
-            go: [
-                { title: 'HTTP Server', prompt: 'Create a simple HTTP server with routing' },
-                { title: 'CLI Tool', prompt: 'Create a CLI tool with command flags' },
-                { title: 'JSON Handler', prompt: 'Parse and generate JSON files' },
-                { title: 'File Watcher', prompt: 'Watch files for changes' }
-            ],
-            rust: [
-                { title: 'HTTP Client', prompt: 'Create an async HTTP client with error handling' },
-                { title: 'File Parser', prompt: 'Parse a config file and return structured data' },
-                { title: 'CSV Reader', prompt: 'Read and process CSV files' },
-                { title: 'JSON Transform', prompt: 'Transform JSON data structures' }
-            ],
-            batch: [
-                { title: 'Folder Backup', prompt: 'Create a batch script to backup folders with timestamp' },
-                { title: 'Service Monitor', prompt: 'Check if a Windows service is running and restart it' },
-                { title: 'Disk Cleanup', prompt: 'Clean temporary files and free disk space' },
-                { title: 'File Search', prompt: 'Search for files by name recursively' },
-                { title: 'Registry Backup', prompt: 'Backup Windows registry keys' }
-            ],
-            docker: [
-                { title: 'Node App', prompt: 'Create a Dockerfile for a Node.js application' },
-                { title: 'Python App', prompt: 'Create a Dockerfile for a Python application with pip' },
-                { title: 'Multi-Container', prompt: 'Create docker-compose with app, database and redis' },
-                { title: 'Nginx Reverse Proxy', prompt: 'Set up Nginx as reverse proxy with SSL' },
-                { title: 'PostgreSQL Setup', prompt: 'Docker compose for PostgreSQL with persistent storage' },
-                { title: 'MongoDB Setup', prompt: 'Docker compose for MongoDB with authentication' }
-            ],
-            api: [
-                { title: 'REST CRUD', prompt: 'Create a REST API with CRUD endpoints' },
-                { title: 'Auth Middleware', prompt: 'Add JWT authentication middleware' },
-                { title: 'Rate Limiter', prompt: 'Add rate limiting to an API' },
-                { title: 'Swagger Docs', prompt: 'Add Swagger/OpenAPI documentation' },
-                { title: 'Error Handler', prompt: 'Global error handling middleware' }
-            ]
-        };
-        
-        function renderTemplates() {
-            const cats = templates[selectedCategory] || [];
-            templatesContainer.innerHTML = cats.map(t => 
-                `<button class="template-btn" onclick="useTemplate('${t.prompt.replace(/'/g, "\\'")}')">${t.title}</button>`
-            ).join('');
-        }
-        
-        let templatesExpanded = false;
-        
-        document.getElementById('templateToggle').addEventListener('click', () => {
-            templatesExpanded = !templatesExpanded;
-            templatesContainer.classList.toggle('expanded', templatesExpanded);
-            document.getElementById('templateToggle').textContent = templatesExpanded ? 'Show less' : 'Show all';
-        });
-        
-        window.useTemplate = function(prompt) {
-            promptInput.value = prompt;
-            promptInput.focus();
+            favToggleBtn.textContent = '♡ Favorites';
         };
         
         // History
         function renderHistory() {
             if (history.length === 0) {
-                historyList.innerHTML = '<div class="history-empty">No history yet</div>';
+                historyList.innerHTML = '<div class="history-empty">No history yet. Your generated scripts will appear here.</div>';
                 return;
             }
             historyList.innerHTML = history.map((item, i) => `
@@ -706,35 +878,63 @@
                         <span class="history-item-category">${item.category}</span>
                         <span class="history-item-date">${item.date}</span>
                     </div>
-                    <div class="history-item-prompt">${item.prompt.substring(0, 60)}...</div>
+                    <div class="history-item-prompt">${item.prompt.substring(0, 80)}${item.prompt.length > 80 ? '...' : ''}</div>
                 </div>
             `).join('');
         }
         
         window.loadHistory = function(index) {
-            const item = history[index];
+            loadHistoryItem(history[index]);
+            historyPanel.classList.remove('show');
+            historyBtn.classList.remove('active');
+        };
+        
+        function loadHistoryItem(item) {
             promptInput.value = item.prompt;
             categories.forEach(b => b.classList.remove('active'));
             document.querySelector(`[data-category="${item.category}"]`)?.classList.add('active');
             selectedCategory = item.category;
-            codeOutput.textContent = item.script;
+            
+            displayCode(item.script, item.category);
             output.classList.add('show');
-            historyPanel.classList.remove('show');
-        };
+            errorOutput.style.display = 'none';
+            updateFavButton();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         
-        window.clearHistory = function() {
-            history = [];
-            localStorage.setItem('scriptgen_history', '[]');
-            renderHistory();
-            showToast('History cleared');
-        };
+        clearHistoryBtn.addEventListener('click', () => {
+            if (confirm('Clear all history?')) {
+                history = [];
+                localStorage.setItem('scriptgen_history', '[]');
+                renderHistory();
+                showToast('History cleared');
+            }
+        });
         
-        // Init
-        renderTemplates();
-        renderHistory();
+        // History toggle
+        historyBtn.addEventListener('click', () => {
+            historyPanel.classList.toggle('show');
+            historyBtn.classList.toggle('active', historyPanel.classList.contains('show'));
+            if (historyPanel.classList.contains('show')) {
+                showingFavorites = false;
+                favToggleBtn.textContent = '♡ Favorites';
+                renderHistory();
+            }
+        });
+        
+        // Favorites toggle
+        favToggleBtn.addEventListener('click', () => {
+            showingFavorites = !showingFavorites;
+            if (showingFavorites) {
+                renderFavorites();
+                favToggleBtn.textContent = '← History';
+            } else {
+                renderHistory();
+                favToggleBtn.textContent = '♡ Favorites';
+            }
+        });
         
         // Theme toggle
-        let isDark = true;
         themeBtn.addEventListener('click', () => {
             isDark = !isDark;
             document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
@@ -743,8 +943,7 @@
         });
         
         // Load saved theme
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
+        if (localStorage.getItem('theme') === 'light') {
             isDark = false;
             document.documentElement.setAttribute('data-theme', 'light');
             themeBtn.textContent = '☀️';
@@ -763,29 +962,30 @@
         // Search history
         searchInput.addEventListener('input', (e) => {
             const q = e.target.value.toLowerCase();
-            if (!q) {
-                renderHistory();
-                return;
-            }
-            const filtered = history.filter(h => 
+            const source = showingFavorites ? favorites : history;
+            const filtered = source.filter(h => 
                 h.prompt.toLowerCase().includes(q) || 
                 h.category.toLowerCase().includes(q)
             );
-            renderFilteredHistory(filtered);
+            if (showingFavorites) {
+                renderFilteredList(filtered, 'loadFilteredFavorite');
+            } else {
+                renderFilteredList(filtered, 'loadFilteredHistory');
+            }
         });
         
-        function renderFilteredHistory(items) {
+        function renderFilteredList(items, loadFn) {
             if (items.length === 0) {
                 historyList.innerHTML = '<div class="history-empty">No results found</div>';
                 return;
             }
             historyList.innerHTML = items.map((item, i) => `
-                <div class="history-item" onclick="loadFilteredHistory(${i})">
+                <div class="history-item" onclick="${loadFn}(${i})">
                     <div class="history-item-header">
                         <span class="history-item-category">${item.category}</span>
                         <span class="history-item-date">${item.date}</span>
                     </div>
-                    <div class="history-item-prompt">${item.prompt.substring(0, 60)}...</div>
+                    <div class="history-item-prompt">${item.prompt.substring(0, 80)}...</div>
                 </div>
             `).join('');
         }
@@ -796,24 +996,57 @@
                 h.prompt.toLowerCase().includes(q) || 
                 h.category.toLowerCase().includes(q)
             );
-            const item = filtered[index];
-            if (item) {
-                promptInput.value = item.prompt;
-                categories.forEach(b => b.classList.remove('active'));
-                document.querySelector(`[data-category="${item.category}"]`)?.classList.add('active');
-                selectedCategory = item.category;
-                codeOutput.textContent = item.script;
-                output.classList.add('show');
+            if (filtered[index]) loadHistoryItem(filtered[index]);
+            historyPanel.classList.remove('show');
+        };
+        
+        window.loadFilteredFavorite = function(index) {
+            const q = searchInput.value.toLowerCase();
+            const filtered = favorites.filter(h => 
+                h.prompt.toLowerCase().includes(q) || 
+                h.category.toLowerCase().includes(q)
+            );
+            if (filtered[index]) {
+                loadHistoryItem(filtered[index]);
                 historyPanel.classList.remove('show');
-                searchInput.value = '';
             }
         };
         
-        // Show toast
-        function showToast(msg) {
+        // Toast
+        function showToast(msg, isError = false) {
             toast.textContent = msg;
+            toast.classList.toggle('error', isError);
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+        
+        // Display code with syntax highlighting
+        function displayCode(code, category) {
+            const lang = langMap[category] || 'javascript';
+            codeOutput.className = `language-${lang}`;
+            codeOutput.textContent = code;
+            Prism.highlightElement(codeOutput);
+            
+            codeLang.textContent = lang.toUpperCase();
+            const lines = code.split('\n').length;
+            codeLines.textContent = `${lines} line${lines !== 1 ? 's' : ''}`;
+            outputCategory.textContent = category;
+            outputCategory.style.background = getCategoryColor(category);
+        }
+        
+        function getCategoryColor(cat) {
+            const colors = {
+                python: '#10B981',
+                javascript: '#F7DF1E',
+                bash: '#4AE54A',
+                go: '#00ADD8',
+                rust: '#DEA584',
+                sql: '#336791',
+                docker: '#2496ED',
+                batch: '#F0A500',
+                api: '#6366F1'
+            };
+            return colors[cat] || '#6366F1';
         }
         
         // Generate
@@ -821,15 +1054,18 @@
             const prompt = promptInput.value.trim();
             if (!prompt) {
                 promptInput.focus();
+                showToast('Please enter a prompt', true);
                 return;
             }
             
             loading.classList.add('show');
+            loadingModel.textContent = `Model: ${modelSelect.options[modelSelect.selectedIndex].text}`;
             output.classList.remove('show');
+            errorOutput.style.display = 'none';
             generateBtn.disabled = true;
             
             try {
-                const response = await fetch('https://scriptgen-gules.vercel.app/api/generate', {
+                const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -840,23 +1076,32 @@
                 });
                 
                 const data = await response.json();
-                codeOutput.textContent = data.script || '// Generated script will appear here';
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                displayCode(data.script, selectedCategory);
                 output.classList.add('show');
                 updateFavButton();
                 
                 // Save to history
                 const historyItem = {
-                    prompt: prompt,
+                    prompt,
                     category: selectedCategory,
-                    script: data.script || '',
+                    script: data.script,
+                    model: modelSelect.value,
                     date: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
                 };
                 history.unshift(historyItem);
                 if (history.length > 50) history.pop();
                 localStorage.setItem('scriptgen_history', JSON.stringify(history));
+                
             } catch (error) {
-                codeOutput.textContent = '// Error generating script. Please try again.';
-                output.classList.add('show');
+                errorMessage.textContent = error.message || 'Failed to generate script. Please try again.';
+                errorOutput.style.display = 'block';
+                output.classList.remove('show');
+                showToast('Generation failed', true);
             } finally {
                 loading.classList.remove('show');
                 generateBtn.disabled = false;
@@ -867,20 +1112,26 @@
         clearBtn.addEventListener('click', () => {
             promptInput.value = '';
             output.classList.remove('show');
+            errorOutput.style.display = 'none';
+            promptInput.focus();
         });
         
         // Copy
         copyBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(codeOutput.textContent);
-            copyBtn.textContent = 'Copied!';
-            setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+            copyBtn.classList.add('copied');
+            copyBtn.textContent = '✓ Copied!';
+            setTimeout(() => {
+                copyBtn.classList.remove('copied');
+                copyBtn.textContent = '📋 Copy';
+            }, 2000);
         });
         
         // Download
         const extensions = {
             python: 'py', javascript: 'js', bash: 'sh', go: 'go', 
             rust: 'rs', sql: 'sql', docker: 'dockerfile', api: 'js', 
-            batch: 'bat', general: 'txt'
+            batch: 'bat'
         };
         
         downloadBtn.addEventListener('click', () => {
@@ -899,8 +1150,12 @@
         // Share
         shareBtn.addEventListener('click', () => {
             const code = codeOutput.textContent;
+            if (code.length > 50000) {
+                showToast('Script too long for sharing', true);
+                return;
+            }
             const b64 = btoa(encodeURIComponent(code));
-            const shareUrl = `${window.location.origin}${window.location.pathname}?code=${b64}`;
+            const shareUrl = `${window.location.origin}${window.location.pathname}?code=${b64}&cat=${selectedCategory}`;
             navigator.clipboard.writeText(shareUrl);
             showToast('Share link copied!');
         });
@@ -909,33 +1164,15 @@
         exportMdBtn.addEventListener('click', () => {
             const code = codeOutput.textContent;
             const prompt = promptInput.value.trim();
-            const md = `# ScriptGen - Generated Script\n\n**Category:** ${selectedCategory}\n**Prompt:** ${prompt}\n\n\`\`\`${selectedCategory}\n${code}\n\`\`\``;
+            const md = `# ScriptGen - Generated Script\n\n**Category:** ${selectedCategory}\n**Model:** ${modelSelect.value}\n**Prompt:** ${prompt}\n\n\`\`\`${selectedCategory}\n${code}\n\`\`\`\n\n---\n*Generated with [ScriptGen](https://scriptgen-gules.vercel.app)*`;
             const blob = new Blob([md], { type: 'text/markdown' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `script.md`;
+            a.download = `script-${selectedCategory}.md`;
             a.click();
             URL.revokeObjectURL(url);
             showToast('Markdown exported!');
-        });
-        
-        // Export PDF
-        exportPdfBtn.addEventListener('click', () => {
-            const code = codeOutput.textContent;
-            const prompt = promptInput.value.trim();
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(16);
-            doc.text('ScriptGen - Generated Script', 10, 15);
-            doc.setFontSize(10);
-            doc.text(`Category: ${selectedCategory}`, 10, 25);
-            doc.text(`Prompt: ${prompt}`, 10, 32);
-            doc.setFontSize(9);
-            const lines = doc.splitTextToSize(code, 180);
-            doc.text(lines, 10, 42);
-            doc.save('script.pdf');
-            showToast('PDF exported!');
         });
         
         // Load shared code
@@ -943,7 +1180,8 @@
         if (params.has('code')) {
             try {
                 const code = decodeURIComponent(atob(params.get('code')));
-                codeOutput.textContent = code;
+                const cat = params.get('cat') || 'python';
+                displayCode(code, cat);
                 output.classList.add('show');
             } catch(e) {}
         }
@@ -952,6 +1190,10 @@
         promptInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.ctrlKey) generateBtn.click();
         });
+        
+        // Init
+        renderTemplates();
+        renderHistory();
     </script>
 </body>
 </html>
