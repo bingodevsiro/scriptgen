@@ -581,6 +581,7 @@
             <button class="category" data-category="docker">Docker</button>
             <button class="category" data-category="batch">Batch</button>
             <button class="category" data-category="api">API</button>
+            <button class="category" data-category="swql">SWQL</button>
         </div>
         
         <div class="main-card">
@@ -730,7 +731,8 @@
             sql: 'sql',
             docker: 'docker',
             batch: 'batch',
-            api: 'javascript'
+            api: 'javascript',
+            swql: 'sql'
         };
         
         // Templates
@@ -810,6 +812,13 @@
                 { title: 'Rate Limiter', prompt: 'Add rate limiting to an API with sliding window algorithm' },
                 { title: 'Swagger Docs', prompt: 'Add Swagger/OpenAPI documentation to an Express API' },
                 { title: 'Error Handler', prompt: 'Create global error handling middleware with proper HTTP status codes' }
+            ],
+            swql: [
+                { title: 'User Query', prompt: 'Create a SWQL query to get users from sys_user table with filters' },
+                { title: 'Incident List', prompt: 'Create a SWQL query to list incidents with assignment details' },
+                { title: 'CMDB Records', prompt: 'Create a SWQL query to get CI relationships from cmdb_ci table' },
+                { title: 'Change Request', prompt: 'Create a SWQL query for change requests with approval status' },
+                { title: 'KPI Report', prompt: 'Create a SWQL query for SLA compliance metrics and KPI reporting' }
             ]
         };
         
@@ -1066,7 +1075,8 @@
                 sql: '#336791',
                 docker: '#2496ED',
                 batch: '#F0A500',
-                api: '#6366F1'
+                api: '#6366F1',
+                swql: '#20B5D9'
             };
             return colors[cat] || '#6366F1';
         }
@@ -1153,7 +1163,7 @@
         const extensions = {
             python: 'py', javascript: 'js', bash: 'sh', go: 'go', 
             rust: 'rs', sql: 'sql', docker: 'dockerfile', api: 'js', 
-            batch: 'bat'
+            batch: 'bat', swql: 'sql'
         };
         
         downloadBtn.addEventListener('click', () => {
