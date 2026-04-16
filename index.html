@@ -585,6 +585,8 @@
             <button class="category" data-category="powershell">PowerShell</button>
             <button class="category" data-category="typescript">TypeScript</button>
             <button class="category" data-category="ruby">Ruby</button>
+            <button class="category" data-category="yaml">YAML</button>
+            <button class="category" data-category="perl">Perl</button>
         </div>
 
         <div class="main-card">
@@ -694,6 +696,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-ruby.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-perl.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
@@ -748,7 +752,9 @@
             swql: 'sql',
             powershell: 'powershell',
             typescript: 'typescript',
-            ruby: 'ruby'
+            ruby: 'ruby',
+            yaml: 'yaml',
+            perl: 'perl'
         };
 
         // Templates
@@ -856,6 +862,20 @@
                 { title: 'DB Migration', prompt: 'Create a Ruby script for database migration tasks with rollback' },
                 { title: 'Log Parser', prompt: 'Create a Ruby script to parse and analyze log files with regex' },
                 { title: 'Cron Monitor', prompt: 'Create a Ruby script to monitor and alert on cron job failures' }
+            ],
+            yaml: [
+                { title: 'K8s Config', prompt: 'Create a Kubernetes YAML config for deployment with service and ingress' },
+                { title: 'CI/CD Pipeline', prompt: 'Create a GitHub Actions workflow YAML file with test and deploy steps' },
+                { title: 'Docker Compose', prompt: 'Create a Docker Compose YAML file with multiple services and networking' },
+                { title: 'Ansible Playbook', prompt: 'Create an Ansible playbook YAML for server provisioning' },
+                { title: 'Config Map', prompt: 'Create a Kubernetes ConfigMap YAML with environment variables' }
+            ],
+            perl: [
+                { title: 'Log Analyzer', prompt: 'Create a Perl script to parse and analyze log files with regex' },
+                { title: 'Text Processor', prompt: 'Create a Perl script for text processing with regex patterns' },
+                { title: 'File Renamer', prompt: 'Create a Perl script to batch rename files using regex' },
+                { title: 'Data Extractor', prompt: 'Create a Perl script to extract data from structured text files' },
+                { title: 'Sysadmin Tool', prompt: 'Create a Perl script for system administration tasks' }
             ]
         };
 
@@ -1116,7 +1136,9 @@
                 swql: '#20B5D9',
                 powershell: '#5391FE',
                 typescript: '#3178C6',
-                ruby: '#CC342D'
+                ruby: '#CC342D',
+                yaml: '#CB171E',
+                perl: '#39457E'
             };
             return colors[cat] || '#6366F1';
         }
@@ -1204,7 +1226,7 @@
             python: 'py', javascript: 'js', bash: 'sh', go: 'go',
             rust: 'rs', sql: 'sql', docker: 'dockerfile', api: 'js',
             batch: 'bat', swql: 'sql', powershell: 'ps1',
-            typescript: 'ts', ruby: 'rb'
+            typescript: 'ts', ruby: 'rb', yaml: 'yml', perl: 'pl'
         };
 
         downloadBtn.addEventListener('click', () => {

@@ -39,6 +39,8 @@ export default async function handler(req, res) {
     powershell: 'You are a PowerShell expert. Generate clean, production-ready PowerShell scripts for Windows automation, administration, and DevOps tasks. Include proper error handling, logging, and parameter validation.',
     typescript: 'You are a TypeScript expert. Generate clean, well-typed TypeScript code following best practices. Use proper types, interfaces, and error handling.',
     ruby: 'You are a Ruby expert. Generate clean, idiomatic Ruby scripts following Ruby conventions. Include proper error handling and logging.',
+    yaml: 'You are a YAML expert. Generate clean, valid YAML configuration files for Kubernetes, CI/CD, Docker, and DevOps. Follow best practices for indentation and structure.',
+    perl: 'You are a Perl expert. Generate clean, efficient Perl scripts for text processing, system administration, and automation. Use proper regex and Perl idioms.',
   };
 
   const selectedModel = model || 'groq-llama-3.3-70b';
