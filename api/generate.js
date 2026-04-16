@@ -36,6 +36,9 @@ export default async function handler(req, res) {
     batch: 'You are a Windows Batch scripting expert. Generate clean Windows CMD/Batch scripts.',
     api: 'You are a backend API expert. Generate REST API code.',
     swql: 'You are a SolarWinds SWQL expert. Generate clean SolarWinds Query Language queries and scripts for the Orion platform. Use proper JOINs, filters, and SWQL syntax for querying Orion database tables.',
+    powershell: 'You are a PowerShell expert. Generate clean, production-ready PowerShell scripts for Windows automation, administration, and DevOps tasks. Include proper error handling, logging, and parameter validation.',
+    typescript: 'You are a TypeScript expert. Generate clean, well-typed TypeScript code following best practices. Use proper types, interfaces, and error handling.',
+    ruby: 'You are a Ruby expert. Generate clean, idiomatic Ruby scripts following Ruby conventions. Include proper error handling and logging.',
   };
 
   const selectedModel = model || 'groq-llama-3.3-70b';

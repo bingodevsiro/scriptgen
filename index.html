@@ -25,7 +25,7 @@
             --error: #EF4444;
             --success: #10B981;
         }
-        
+
         [data-theme="light"] {
             --bg: #FAFAFA;
             --surface: #FFFFFF;
@@ -34,9 +34,9 @@
             --text: #18181B;
             --text-secondary: #71717A;
         }
-        
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         body {
             font-family: 'Geist', system-ui, sans-serif;
             background: var(--bg);
@@ -45,16 +45,16 @@
             line-height: 1.6;
             transition: background 0.3s, color 0.3s;
         }
-        
+
         .container { max-width: 900px; margin: 0 auto; padding: 24px; }
-        
+
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 32px 0 24px;
         }
-        
+
         .logo {
             font-size: 1.75rem;
             font-weight: 700;
@@ -64,16 +64,16 @@
             background-clip: text;
             letter-spacing: -0.02em;
         }
-        
+
         .logo-sub {
             font-size: 0.75rem;
             color: var(--text-secondary);
             font-weight: 400;
             margin-top: 4px;
         }
-        
+
         .header-controls { display: flex; gap: 8px; }
-        
+
         .icon-btn {
             width: 40px;
             height: 40px;
@@ -88,24 +88,24 @@
             justify-content: center;
             transition: all 0.2s;
         }
-        
+
         .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
         .icon-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(99, 102, 241, 0.1); }
-        
-        .tagline { 
-            color: var(--text-secondary); 
+
+        .tagline {
+            color: var(--text-secondary);
             margin-bottom: 24px;
             font-size: 0.95rem;
         }
-        
+
         .templates-section { margin-bottom: 20px; }
-        
+
         .templates {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
         }
-        
+
         .template-btn {
             padding: 6px 12px;
             background: var(--surface);
@@ -117,18 +117,18 @@
             transition: all 0.2s;
             font-family: inherit;
         }
-        
+
         .template-btn:hover { border-color: var(--accent); color: var(--accent); }
-        
+
         .templates-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
         }
-        
+
         .templates-header h3 { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
-        
+
         .template-toggle {
             background: none;
             border: none;
@@ -138,19 +138,19 @@
             padding: 4px 8px;
             font-family: inherit;
         }
-        
+
         .template-toggle:hover { text-decoration: underline; }
-        
+
         .templates:not(.expanded) .template-btn:nth-child(n+4) { display: none; }
         .templates.expanded .template-btn { display: inline-block; }
-        
+
         .categories {
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
             margin-bottom: 20px;
         }
-        
+
         .category {
             padding: 8px 14px;
             background: var(--surface);
@@ -162,20 +162,20 @@
             transition: all 0.2s;
             font-family: inherit;
         }
-        
+
         .category:hover, .category.active {
             background: var(--primary);
             color: var(--bg);
             border-color: var(--primary);
         }
-        
+
         .main-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 24px;
         }
-        
+
         textarea {
             width: 100%;
             min-height: 120px;
@@ -190,29 +190,29 @@
             transition: border-color 0.2s;
             line-height: 1.5;
         }
-        
+
         textarea:focus { outline: none; border-color: var(--primary); }
         textarea::placeholder { color: var(--text-secondary); }
-        
+
         .input-hint {
             font-size: 0.75rem;
             color: var(--text-secondary);
             margin-top: 6px;
             text-align: right;
         }
-        
+
         .options-row {
             display: flex;
             gap: 12px;
             margin-top: 16px;
             flex-wrap: wrap;
         }
-        
+
         .select-wrapper {
             flex: 1;
             min-width: 150px;
         }
-        
+
         .select-wrapper label {
             display: block;
             font-size: 0.75rem;
@@ -220,7 +220,7 @@
             margin-bottom: 6px;
             font-weight: 500;
         }
-        
+
         select {
             width: 100%;
             padding: 10px 12px;
@@ -233,15 +233,15 @@
             font-family: inherit;
             transition: border-color 0.2s;
         }
-        
+
         select:focus { outline: none; border-color: var(--primary); }
-        
+
         .actions {
             display: flex;
             gap: 12px;
             margin-top: 16px;
         }
-        
+
         .btn {
             flex: 1;
             padding: 14px 24px;
@@ -253,33 +253,33 @@
             border: none;
             font-family: inherit;
         }
-        
+
         .btn-primary {
             background: var(--primary);
             color: var(--bg);
         }
-        
+
         .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-        
+
         .btn-secondary {
             background: transparent;
             color: var(--text-secondary);
             border: 1px solid var(--border);
         }
-        
+
         .btn-secondary:hover { color: var(--text); border-color: var(--text-secondary); }
-        
+
         /* Loading state */
-        .loading { 
-            display: none; 
-            text-align: center; 
-            padding: 32px; 
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 32px;
             color: var(--text-secondary);
         }
-        
+
         .loading.show { display: block; }
-        
+
         .spinner {
             width: 36px;
             height: 36px;
@@ -289,21 +289,21 @@
             animation: spin 0.8s linear infinite;
             margin: 0 auto 12px;
         }
-        
+
         @keyframes spin { to { transform: rotate(360deg); } }
-        
+
         .loading-text { font-size: 0.85rem; }
         .loading-model { font-size: 0.75rem; color: var(--accent); margin-top: 4px; }
-        
+
         /* Output */
         .output { margin-top: 20px; display: none; }
         .output.show { display: block; animation: fadeIn 0.3s ease; }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .output-header {
             display: flex;
             justify-content: space-between;
@@ -312,15 +312,15 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        
-        .output-label { 
-            color: var(--text-secondary); 
+
+        .output-label {
+            color: var(--text-secondary);
             font-size: 0.8rem;
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        
+
         .output-label .badge {
             padding: 2px 8px;
             background: var(--primary);
@@ -329,9 +329,9 @@
             font-size: 0.7rem;
             font-weight: 600;
         }
-        
+
         .output-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-        
+
         .action-btn {
             padding: 6px 12px;
             background: transparent;
@@ -346,16 +346,16 @@
             align-items: center;
             gap: 4px;
         }
-        
+
         .action-btn:hover { border-color: var(--primary); color: var(--primary); }
-        
+
         .action-btn.copied { border-color: var(--success); color: var(--success); }
-        
+
         .action-btn.share { border-color: var(--accent); color: var(--accent); }
         .action-btn.share:hover { background: var(--accent); color: white; }
-        
+
         .action-btn.fav-active { border-color: var(--warning); color: var(--warning); }
-        
+
         /* Code block with Prism */
         .code-wrapper {
             background: var(--bg);
@@ -363,7 +363,7 @@
             border-radius: 12px;
             overflow: hidden;
         }
-        
+
         .code-header {
             display: flex;
             justify-content: space-between;
@@ -374,16 +374,16 @@
             font-size: 0.75rem;
             color: var(--text-secondary);
         }
-        
+
         .code-lang {
             font-family: 'JetBrains Mono', monospace;
             text-transform: uppercase;
             font-weight: 500;
             color: var(--accent);
         }
-        
+
         .code-lines { font-family: 'JetBrains Mono', monospace; color: var(--text-secondary); }
-        
+
         pre[class*="language-"] {
             margin: 0 !important;
             border-radius: 0 !important;
@@ -394,12 +394,12 @@
             max-height: 500px;
             overflow-y: auto;
         }
-        
+
         code[class*="language-"] {
             font-family: 'JetBrains Mono', monospace !important;
             background: none !important;
         }
-        
+
         /* Error state */
         .error-output {
             background: rgba(239, 68, 68, 0.1);
@@ -409,12 +409,12 @@
             color: var(--error);
             font-size: 0.875rem;
         }
-        
+
         .error-output strong { display: block; margin-bottom: 4px; }
-        
+
         /* Search & History */
         .search-row { margin-top: 12px; }
-        
+
         .search-input {
             width: 100%;
             padding: 10px 12px;
@@ -426,9 +426,9 @@
             font-family: inherit;
             transition: border-color 0.2s;
         }
-        
+
         .search-input:focus { outline: none; border-color: var(--primary); }
-        
+
         .history-panel {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -438,9 +438,9 @@
             overflow-y: auto;
             display: none;
         }
-        
+
         .history-panel.show { display: block; }
-        
+
         .history-header {
             display: flex;
             justify-content: space-between;
@@ -452,25 +452,25 @@
             background: var(--surface);
             z-index: 1;
         }
-        
+
         .history-header-title { font-size: 0.8rem; color: var(--text-secondary); }
-        
+
         .history-header-actions { display: flex; gap: 6px; }
-        
+
         .history-empty { text-align: center; padding: 28px; color: var(--text-secondary); font-size: 0.85rem; }
-        
+
         .history-item {
             padding: 12px 14px;
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: background 0.2s;
         }
-        
+
         .history-item:hover { background: var(--surface-hover); }
         .history-item:last-child { border-bottom: none; }
-        
+
         .history-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        
+
         .history-item-category {
             font-size: 0.65rem;
             padding: 2px 8px;
@@ -480,9 +480,9 @@
             text-transform: uppercase;
             font-weight: 600;
         }
-        
+
         .history-item-date { font-size: 0.7rem; color: var(--text-secondary); }
-        
+
         .history-item-prompt {
             font-size: 0.8rem;
             color: var(--text);
@@ -490,7 +490,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         /* Toast */
         .toast {
             position: fixed;
@@ -508,10 +508,10 @@
             z-index: 1000;
             pointer-events: none;
         }
-        
+
         .toast.show { opacity: 1; }
         .toast.error { border-color: var(--error); color: var(--error); }
-        
+
         /* Footer */
         footer {
             text-align: center;
@@ -519,23 +519,23 @@
             color: var(--text-secondary);
             font-size: 0.8rem;
         }
-        
+
         .donation-section {
             margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        
+
         .donation-section p {
             margin-bottom: 12px;
             font-size: 1rem;
             color: var(--text);
         }
-        
+
         footer a { color: var(--primary); text-decoration: none; }
         footer a:hover { text-decoration: underline; }
-        
+
         /* Responsive */
         @media (max-width: 640px) {
             .container { padding: 16px; }
@@ -560,9 +560,9 @@
                 <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
             </div>
         </header>
-        
+
         <p class="tagline">Generate clean, working code scripts from natural language prompts</p>
-        
+
         <div class="templates-section">
             <div class="templates-header">
                 <h3>📋 Quick Templates</h3>
@@ -570,7 +570,7 @@
             </div>
             <div class="templates" id="templates"></div>
         </div>
-        
+
         <div class="categories">
             <button class="category active" data-category="python">Python</button>
             <button class="category" data-category="javascript">JavaScript</button>
@@ -582,13 +582,16 @@
             <button class="category" data-category="batch">Batch</button>
             <button class="category" data-category="api">API</button>
             <button class="category" data-category="swql">SWQL</button>
+            <button class="category" data-category="powershell">PowerShell</button>
+            <button class="category" data-category="typescript">TypeScript</button>
+            <button class="category" data-category="ruby">Ruby</button>
         </div>
-        
+
         <div class="main-card">
             <textarea id="prompt" placeholder="Describe what script you need...&#10;&#10;Example: Create a Python script that reads a CSV file, calculates statistics for each numeric column, and outputs a summary report"></textarea>
-            
+
             <div class="input-hint">Press Ctrl+Enter to generate</div>
-            
+
             <div class="options-row">
                 <div class="select-wrapper">
                     <label>AI Model</label>
@@ -612,22 +615,22 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="search-row">
                 <input type="text" id="searchInput" placeholder="Search history..." class="search-input">
             </div>
-            
+
             <div class="actions">
                 <button class="btn btn-primary" id="generateBtn">⚡ Generate Script</button>
                 <button class="btn btn-secondary" id="clearBtn">Clear</button>
             </div>
-            
+
             <div class="loading" id="loading">
                 <div class="spinner"></div>
                 <div class="loading-text">Generating your script...</div>
                 <div class="loading-model" id="loadingModel"></div>
             </div>
-            
+
             <div class="output" id="output">
                 <div class="output-header">
                     <span class="output-label">
@@ -650,13 +653,13 @@
                     <pre class="line-numbers"><code class="language-python" id="codeOutput"></code></pre>
                 </div>
             </div>
-            
+
             <div class="error-output" id="errorOutput" style="display: none;">
                 <strong>⚠️ Error</strong>
                 <div id="errorMessage"></div>
             </div>
         </div>
-        
+
         <div class="history-panel" id="historyPanel">
             <div class="history-header">
                 <span class="history-header-title">History</span>
@@ -667,7 +670,7 @@
             </div>
             <div id="historyList"></div>
         </div>
-        
+
         <footer>
             <div class="donation-section">
                 <p>🙏 Support ScriptGen</p>
@@ -676,9 +679,9 @@
             <p>Powered by Groq AI • Free to use • <a href="https://github.com/bingodevsiro/scriptgen" target="_blank">View Source</a></p>
         </footer>
     </div>
-    
+
     <div class="toast" id="toast"></div>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
@@ -689,6 +692,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-batch.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-ruby.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
@@ -721,14 +726,14 @@
         const favToggleBtn = document.getElementById('favToggleBtn');
         const clearHistoryBtn = document.getElementById('clearHistoryBtn');
         const outputCategory = document.getElementById('outputCategory');
-        
+
         // State
         let selectedCategory = 'python';
         let favorites = JSON.parse(localStorage.getItem('scriptgen_favorites') || '[]');
         let history = JSON.parse(localStorage.getItem('scriptgen_history') || '[]');
         let showingFavorites = false;
         let isDark = true;
-        
+
         // Language map for Prism
         const langMap = {
             python: 'python',
@@ -740,9 +745,12 @@
             docker: 'docker',
             batch: 'batch',
             api: 'javascript',
-            swql: 'sql'
+            swql: 'sql',
+            powershell: 'powershell',
+            typescript: 'typescript',
+            ruby: 'ruby'
         };
-        
+
         // Templates
         const templates = {
             python: [
@@ -827,29 +835,50 @@
                 { title: 'Alert List', prompt: 'Create a SWQL query to list active alerts from Orion.AlertStatus' },
                 { title: 'CPU/Memory', prompt: 'Create a SWQL query for CPU and memory utilization from Orion.Nodes' },
                 { title: 'Custom Report', prompt: 'Create a SWQL query for custom reports joining multiple Orion tables' }
+            ],
+            powershell: [
+                { title: 'File Manager', prompt: 'Create a PowerShell script to manage files - copy, move, rename with logging' },
+                { title: 'Service Control', prompt: 'Create a PowerShell script to start, stop, and check Windows services status' },
+                { title: 'Network Report', prompt: 'Create a PowerShell script to generate network inventory report' },
+                { title: 'AD User Check', prompt: 'Create a PowerShell script to query Active Directory for user information' },
+                { title: 'Backup Script', prompt: 'Create a PowerShell script to backup folders with compression and scheduling' }
+            ],
+            typescript: [
+                { title: 'CLI Tool', prompt: 'Create a TypeScript CLI tool with argument parsing and colored output' },
+                { title: 'API Client', prompt: 'Create a TypeScript API client with retry logic and error handling' },
+                { title: 'File Watcher', prompt: 'Create a TypeScript script that watches files for changes and processes them' },
+                { title: 'Config Parser', prompt: 'Create a TypeScript script to parse and validate JSON/YAML config files' },
+                { title: 'Batch Processor', prompt: 'Create a TypeScript script for batch processing CSV/JSON files' }
+            ],
+            ruby: [
+                { title: 'File Automation', prompt: 'Create a Ruby script to automate file operations with logging' },
+                { title: 'Web Scraper', prompt: 'Create a Ruby script using Nokogiri to scrape data from websites' },
+                { title: 'DB Migration', prompt: 'Create a Ruby script for database migration tasks with rollback' },
+                { title: 'Log Parser', prompt: 'Create a Ruby script to parse and analyze log files with regex' },
+                { title: 'Cron Monitor', prompt: 'Create a Ruby script to monitor and alert on cron job failures' }
             ]
         };
-        
+
         // Render templates
         function renderTemplates() {
             const cats = templates[selectedCategory] || [];
-            templatesContainer.innerHTML = cats.map(t => 
+            templatesContainer.innerHTML = cats.map(t =>
                 `<button class="template-btn" onclick="useTemplate('${t.prompt.replace(/'/g, "\\'")}')">${t.title}</button>`
             ).join('');
         }
-        
+
         let templatesExpanded = false;
         document.getElementById('templateToggle').addEventListener('click', () => {
             templatesExpanded = !templatesExpanded;
             templatesContainer.classList.toggle('expanded', templatesExpanded);
             document.getElementById('templateToggle').textContent = templatesExpanded ? 'Show less' : 'Show all';
         });
-        
+
         window.useTemplate = function(prompt) {
             promptInput.value = prompt;
             promptInput.focus();
         };
-        
+
         // Favorites
         function updateFavButton() {
             const code = codeOutput.textContent;
@@ -857,13 +886,13 @@
             favBtn.classList.toggle('fav-active', isFav);
             favBtn.textContent = isFav ? '♥ Favorited' : '♡ Favorite';
         }
-        
+
         favBtn.addEventListener('click', () => {
             const code = codeOutput.textContent.trim();
             if (!code) return;
             const prompt = promptInput.value.trim();
             const existingIndex = favorites.findIndex(f => f.script === code);
-            
+
             if (existingIndex > -1) {
                 favorites.splice(existingIndex, 1);
                 showToast('Removed from favorites');
@@ -879,7 +908,7 @@
             updateFavButton();
             if (showingFavorites) renderFavorites();
         });
-        
+
         function renderFavorites() {
             if (favorites.length === 0) {
                 historyList.innerHTML = '<div class="history-empty">No favorites yet. Generate a script and click the ❤️ button.</div>';
@@ -895,7 +924,7 @@
                 </div>
             `).join('');
         }
-        
+
         window.loadFavorite = function(index) {
             const item = favorites[index];
             loadHistoryItem(item);
@@ -904,7 +933,7 @@
             showingFavorites = false;
             favToggleBtn.textContent = '♡ Favorites';
         };
-        
+
         // History
         function renderHistory() {
             if (history.length === 0) {
@@ -921,26 +950,26 @@
                 </div>
             `).join('');
         }
-        
+
         window.loadHistory = function(index) {
             loadHistoryItem(history[index]);
             historyPanel.classList.remove('show');
             historyBtn.classList.remove('active');
         };
-        
+
         function loadHistoryItem(item) {
             promptInput.value = item.prompt;
             categories.forEach(b => b.classList.remove('active'));
             document.querySelector(`[data-category="${item.category}"]`)?.classList.add('active');
             selectedCategory = item.category;
-            
+
             displayCode(item.script, item.category);
             output.classList.add('show');
             errorOutput.style.display = 'none';
             updateFavButton();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
+
         clearHistoryBtn.addEventListener('click', () => {
             if (confirm('Clear all history?')) {
                 history = [];
@@ -949,7 +978,7 @@
                 showToast('History cleared');
             }
         });
-        
+
         // History toggle
         historyBtn.addEventListener('click', () => {
             historyPanel.classList.toggle('show');
@@ -960,7 +989,7 @@
                 renderHistory();
             }
         });
-        
+
         // Favorites toggle
         favToggleBtn.addEventListener('click', () => {
             showingFavorites = !showingFavorites;
@@ -972,7 +1001,7 @@
                 favToggleBtn.textContent = '♡ Favorites';
             }
         });
-        
+
         // Theme toggle
         themeBtn.addEventListener('click', () => {
             isDark = !isDark;
@@ -980,14 +1009,14 @@
             themeBtn.textContent = isDark ? '🌙' : '☀️';
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         });
-        
+
         // Load saved theme
         if (localStorage.getItem('theme') === 'light') {
             isDark = false;
             document.documentElement.setAttribute('data-theme', 'light');
             themeBtn.textContent = '☀️';
         }
-        
+
         // Category selection
         categories.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -997,13 +1026,13 @@
                 renderTemplates();
             });
         });
-        
+
         // Search history
         searchInput.addEventListener('input', (e) => {
             const q = e.target.value.toLowerCase();
             const source = showingFavorites ? favorites : history;
-            const filtered = source.filter(h => 
-                h.prompt.toLowerCase().includes(q) || 
+            const filtered = source.filter(h =>
+                h.prompt.toLowerCase().includes(q) ||
                 h.category.toLowerCase().includes(q)
             );
             if (showingFavorites) {
@@ -1012,7 +1041,7 @@
                 renderFilteredList(filtered, 'loadFilteredHistory');
             }
         });
-        
+
         function renderFilteredList(items, loadFn) {
             if (items.length === 0) {
                 historyList.innerHTML = '<div class="history-empty">No results found</div>';
@@ -1028,21 +1057,21 @@
                 </div>
             `).join('');
         }
-        
+
         window.loadFilteredHistory = function(index) {
             const q = searchInput.value.toLowerCase();
-            const filtered = history.filter(h => 
-                h.prompt.toLowerCase().includes(q) || 
+            const filtered = history.filter(h =>
+                h.prompt.toLowerCase().includes(q) ||
                 h.category.toLowerCase().includes(q)
             );
             if (filtered[index]) loadHistoryItem(filtered[index]);
             historyPanel.classList.remove('show');
         };
-        
+
         window.loadFilteredFavorite = function(index) {
             const q = searchInput.value.toLowerCase();
-            const filtered = favorites.filter(h => 
-                h.prompt.toLowerCase().includes(q) || 
+            const filtered = favorites.filter(h =>
+                h.prompt.toLowerCase().includes(q) ||
                 h.category.toLowerCase().includes(q)
             );
             if (filtered[index]) {
@@ -1050,7 +1079,7 @@
                 historyPanel.classList.remove('show');
             }
         };
-        
+
         // Toast
         function showToast(msg, isError = false) {
             toast.textContent = msg;
@@ -1058,21 +1087,21 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2500);
         }
-        
+
         // Display code with syntax highlighting
         function displayCode(code, category) {
             const lang = langMap[category] || 'javascript';
             codeOutput.className = `language-${lang}`;
             codeOutput.textContent = code;
             Prism.highlightElement(codeOutput);
-            
+
             codeLang.textContent = lang.toUpperCase();
             const lines = code.split('\n').length;
             codeLines.textContent = `${lines} line${lines !== 1 ? 's' : ''}`;
             outputCategory.textContent = category;
             outputCategory.style.background = getCategoryColor(category);
         }
-        
+
         function getCategoryColor(cat) {
             const colors = {
                 python: '#10B981',
@@ -1084,11 +1113,14 @@
                 docker: '#2496ED',
                 batch: '#F0A500',
                 api: '#6366F1',
-                swql: '#20B5D9'
+                swql: '#20B5D9',
+                powershell: '#5391FE',
+                typescript: '#3178C6',
+                ruby: '#CC342D'
             };
             return colors[cat] || '#6366F1';
         }
-        
+
         // Generate
         generateBtn.addEventListener('click', async () => {
             const prompt = promptInput.value.trim();
@@ -1097,34 +1129,34 @@
                 showToast('Please enter a prompt', true);
                 return;
             }
-            
+
             loading.classList.add('show');
             loadingModel.textContent = `Model: ${modelSelect.options[modelSelect.selectedIndex].text}`;
             output.classList.remove('show');
             errorOutput.style.display = 'none';
             generateBtn.disabled = true;
-            
+
             try {
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        prompt, 
+                    body: JSON.stringify({
+                        prompt,
                         category: selectedCategory,
                         model: modelSelect.value
                     })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.error) {
                     throw new Error(data.error);
                 }
-                
+
                 displayCode(data.script, selectedCategory);
                 output.classList.add('show');
                 updateFavButton();
-                
+
                 // Save to history
                 const historyItem = {
                     prompt,
@@ -1136,7 +1168,7 @@
                 history.unshift(historyItem);
                 if (history.length > 50) history.pop();
                 localStorage.setItem('scriptgen_history', JSON.stringify(history));
-                
+
             } catch (error) {
                 errorMessage.textContent = error.message || 'Failed to generate script. Please try again.';
                 errorOutput.style.display = 'block';
@@ -1147,7 +1179,7 @@
                 generateBtn.disabled = false;
             }
         });
-        
+
         // Clear
         clearBtn.addEventListener('click', () => {
             promptInput.value = '';
@@ -1155,7 +1187,7 @@
             errorOutput.style.display = 'none';
             promptInput.focus();
         });
-        
+
         // Copy
         copyBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(codeOutput.textContent);
@@ -1166,14 +1198,15 @@
                 copyBtn.textContent = '📋 Copy';
             }, 2000);
         });
-        
+
         // Download
         const extensions = {
-            python: 'py', javascript: 'js', bash: 'sh', go: 'go', 
-            rust: 'rs', sql: 'sql', docker: 'dockerfile', api: 'js', 
-            batch: 'bat', swql: 'sql'
+            python: 'py', javascript: 'js', bash: 'sh', go: 'go',
+            rust: 'rs', sql: 'sql', docker: 'dockerfile', api: 'js',
+            batch: 'bat', swql: 'sql', powershell: 'ps1',
+            typescript: 'ts', ruby: 'rb'
         };
-        
+
         downloadBtn.addEventListener('click', () => {
             const code = codeOutput.textContent;
             const ext = extensions[selectedCategory] || 'txt';
@@ -1186,7 +1219,7 @@
             URL.revokeObjectURL(url);
             showToast('Downloaded!');
         });
-        
+
         // Share
         shareBtn.addEventListener('click', () => {
             const code = codeOutput.textContent;
@@ -1199,7 +1232,7 @@
             navigator.clipboard.writeText(shareUrl);
             showToast('Share link copied!');
         });
-        
+
         // Export Markdown
         exportMdBtn.addEventListener('click', () => {
             const code = codeOutput.textContent;
@@ -1214,7 +1247,7 @@
             URL.revokeObjectURL(url);
             showToast('Markdown exported!');
         });
-        
+
         // Load shared code
         const params = new URLSearchParams(window.location.search);
         if (params.has('code')) {
@@ -1225,12 +1258,12 @@
                 output.classList.add('show');
             } catch(e) {}
         }
-        
+
         // Ctrl+Enter to generate
         promptInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.ctrlKey) generateBtn.click();
         });
-        
+
         // Init
         renderTemplates();
         renderHistory();
