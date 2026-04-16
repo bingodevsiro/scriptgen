@@ -6,13 +6,25 @@ export default async function handler(req, res) {
   const { prompt, category, model } = req.body;
   const GROQ_API_KEY = process.env.GROQ_API_KEY;
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
   // Model definitions
   const MODELS = {
+    // Groq models
     'groq-llama-3.3-70b': { provider: 'groq', name: 'llama-3.3-70b-versatile' },
     'groq-llama-3.1-8b': { provider: 'groq', name: 'llama-3.1-8b-instant' },
     'groq-qwen-32b': { provider: 'groq', name: 'qwen/qwen3-32b' },
+    // Gemini
     'gemini-2.5-flash': { provider: 'gemini', name: 'gemini-2.5-flash' },
+    // OpenRouter models (free for code)
+    'or-qwen-coder-free': { provider: 'openrouter', name: 'qwen/qwen3-coder-480b-a35b-07-25' },
+    'or-gpt-oss-120b-free': { provider: 'openrouter', name: 'openai/gpt-oss-120b' },
+    'or-gpt-oss-20b-free': { provider: 'openrouter', name: 'openai/gpt-oss-20b' },
+    'or-gemma-3-27b-free': { provider: 'openrouter', name: 'google/gemma-3-27b-it' },
+    'or-gemma-3-12b-free': { provider: 'openrouter', name: 'google/gemma-3-12b-it' },
+    'or-gemma-3-4b-free': { provider: 'openrouter', name: 'google/gemma-3-4b-it' },
+    'or-glm-4-32b': { provider: 'openrouter', name: 'z-ai/glm-4-32b' },
+    'or-devstral-small': { provider: 'openrouter', name: 'mistralai/devstral-small-2507' },
   };
 
   const CATEGORY_PROMPTS = {
@@ -91,6 +103,36 @@ export default async function handler(req, res) {
         return res.status(response.status).json({ error: data.error?.message || 'Gemini API error' });
       }
       script = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    } else if (modelConfig.provider === 'openrouter') {
+      if (!OPENROUTER_API_KEY) {
+        return res.status(500).json({ error: 'OPENROUTER_API_KEY not configured' });
+      }
+
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://scriptgen-gules.vercel.app',
+          'X-Title': 'ScriptGen',
+        },
+        body: JSON.stringify({
+          model: modelConfig.name,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: `Write a complete, working script: ${prompt}` }
+          ],
+          temperature: 0.7,
+          max_tokens: 4096,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        return res.status(response.status).json({ error: data.error?.message || 'OpenRouter API error' });
+      }
+      script = data.choices?.[0]?.message?.content || '';
     }
 
     if (!script) {
