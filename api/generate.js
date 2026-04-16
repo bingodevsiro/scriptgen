@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     docker: 'You are a Docker expert. Generate Dockerfiles and docker-compose files.',
     batch: 'You are a Windows Batch scripting expert. Generate clean Windows CMD/Batch scripts.',
     api: 'You are a backend API expert. Generate REST API code.',
-    swql: 'You are a ServiceNow SWQL expert. Generate clean ServiceNow Query Language queries and scripts for ServiceNow instances.',
+    swql: 'You are a SolarWinds SWQL expert. Generate clean SolarWinds Query Language queries and scripts for the Orion platform. Use proper JOINs, filters, and SWQL syntax for querying Orion database tables.',
   };
 
   const selectedModel = model || 'groq-llama-3.3-70b';
