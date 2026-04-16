@@ -23,8 +23,6 @@ export default async function handler(req, res) {
     'or-gemma-3-27b-free': { provider: 'openrouter', name: 'google/gemma-3-27b-it' },
     'or-gemma-3-12b-free': { provider: 'openrouter', name: 'google/gemma-3-12b-it' },
     'or-gemma-3-4b-free': { provider: 'openrouter', name: 'google/gemma-3-4b-it' },
-    'or-glm-4-32b': { provider: 'openrouter', name: 'z-ai/glm-4-32b' },
-    'or-devstral-small': { provider: 'openrouter', name: 'mistralai/devstral-small-2507' },
   };
 
   const CATEGORY_PROMPTS = {
