@@ -867,7 +867,72 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-perl.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="auth-service.js"></script>
+    <script>
+// Supabase Auth Service for ScriptGen
+const SUPABASE_URL = 'https://kdgouaudgujnfsmfmswr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkZ291YXVkZ3VqbmZzbWZtc3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MjA0NjcsImV4cCI6MjA5MTk5NjQ2N30.T0DOoGim3c9cxqkOWwh_N8fNG6hILneBJ4gXKesSwCE';
+
+class AuthService {
+    constructor() { this.user = null; this.listeners = []; }
+    async init() {
+        const savedUser = localStorage.getItem('scriptgen_user');
+        if (savedUser) { try { this.user = JSON.parse(savedUser); this.notifyListeners(); } catch (e) { localStorage.removeItem('scriptgen_user'); } }
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('auth_callback')) await this.handleOAuthCallback();
+    }
+    onAuthChange(callback) { this.listeners.push(callback); if (this.user) callback(this.user); }
+    notifyListeners() { this.listeners.forEach(cb => cb(this.user)); }
+    async signUp(email, password) {
+        try {
+            const response = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+                body: JSON.stringify({ email, password, data: { created_at: new Date().toISOString() } })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.msg || data.message || 'Signup failed');
+            this.user = { id: data.id, email: data.email, aud: data.aud };
+            localStorage.setItem('scriptgen_user', JSON.stringify(this.user));
+            localStorage.setItem('scriptgen_session', data.session?.access_token || '');
+            this.notifyListeners();
+            return { success: true, user: this.user };
+        } catch (error) { return { success: false, error: error.message }; }
+    }
+    async signIn(email, password) {
+        try {
+            const response = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.msg || data.message || 'Invalid credentials');
+            this.user = { id: data.user.id, email: data.user.email, aud: data.user.aud };
+            localStorage.setItem('scriptgen_user', JSON.stringify(this.user));
+            localStorage.setItem('scriptgen_session', data.access_token);
+            this.notifyListeners();
+            return { success: true, user: this.user };
+        } catch (error) { return { success: false, error: error.message }; }
+    }
+    signOut() { this.user = null; localStorage.removeItem('scriptgen_user'); localStorage.removeItem('scriptgen_session'); this.notifyListeners(); }
+    isLoggedIn() { return this.user !== null; }
+    getUser() { return this.user; }
+}
+
+class UsageService {
+    constructor(auth) { this.auth = auth; this.dailyLimit = 20; }
+    getUsage() {
+        const today = new Date().toDateString();
+        const saved = localStorage.getItem('scriptgen_usage');
+        if (!saved) return { count: 0, date: today };
+        try { const data = JSON.parse(saved); return data.date !== today ? { count: 0, date: today } : data; } catch (e) { return { count: 0, date: today }; }
+    }
+    getRemaining() { const usage = this.getUsage(); return Math.max(0, this.dailyLimit - usage.count); }
+}
+
+window.authService = new AuthService();
+window.usageService = new UsageService(window.authService);
+    </script>
     <script>
         // Elements
         const promptInput = document.getElementById('prompt');

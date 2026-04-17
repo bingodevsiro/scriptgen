@@ -2,12 +2,10 @@
   "version": 2,
   "builds": [
     { "src": "index.html", "use": "@vercel/static" },
-    { "src": "auth-service.js", "use": "@vercel/static" },
     { "src": "api/**/*.js", "use": "@vercel/node", "config": { "maxDuration": 60 } }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/generate.js" },
-    { "src": "/auth-service.js", "dest": "/auth-service.js" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
