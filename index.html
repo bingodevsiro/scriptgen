@@ -877,8 +877,10 @@ class AuthService {
     async init() {
         const savedUser = localStorage.getItem('scriptgen_user');
         if (savedUser) { try { this.user = JSON.parse(savedUser); this.notifyListeners(); } catch (e) { localStorage.removeItem('scriptgen_user'); } }
+        // Check for OAuth callback - either in URL params or hash fragment
         const params = new URLSearchParams(window.location.search);
-        if (params.has('auth_callback')) await this.handleOAuthCallback();
+        const hasCallback = params.has('auth_callback') || window.location.hash.includes('access_token');
+        if (hasCallback) await this.handleOAuthCallback();
     }
     onAuthChange(callback) { this.listeners.push(callback); if (this.user) callback(this.user); }
     notifyListeners() { this.listeners.forEach(cb => cb(this.user)); }
@@ -926,12 +928,19 @@ class AuthService {
         window.location.href = redirectUrl;
     }
     async handleOAuthCallback() {
-        const params = new URLSearchParams(window.location.search);
-        const accessToken = params.get('access_token');
-        const type = params.get('type');
-        if (accessToken && type === 'recovery') {
-            localStorage.setItem('scriptgen_session', accessToken);
-            await this.getCurrentUser();
+        // Supabase sends tokens as URL hash fragment, not query params
+        const hash = window.location.hash;
+        if (hash) {
+            const params = new URLSearchParams(hash.substring(1)); // remove #
+            const accessToken = params.get('access_token');
+            const refreshToken = params.get('refresh_token');
+            const type = params.get('type');
+            
+            if (accessToken) {
+                localStorage.setItem('scriptgen_session', accessToken);
+                if (refreshToken) localStorage.setItem('scriptgen_refresh', refreshToken);
+                await this.getCurrentUser();
+            }
         }
         // Clean URL
         window.history.replaceState({}, document.title, window.location.pathname);
