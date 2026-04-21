@@ -1456,6 +1456,14 @@ window.usageService = new UsageService(window.authService);
                 displayCode(data.script, selectedCategory);
                 output.classList.add('show');
                 updateFavButton();
+                
+                // Record usage for logged-in users
+                if (authService.isLoggedIn()) {
+                    const usage = usageService.recordGeneration();
+                    const remaining = usageService.getRemaining();
+                    document.getElementById('usageInfo').textContent = `${remaining}/20 gen rămasă`;
+                    if (remaining <= 0) showToast('Ai atins limita de 20 generări pe zi!', true);
+                }
 
                 // Save to history
                 const historyItem = {
