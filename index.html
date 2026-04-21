@@ -963,14 +963,23 @@ class AuthService {
 }
 
 class UsageService {
-    constructor(auth) { this.auth = auth; this.dailyLimit = 20; }
+    constructor(auth) { this.auth = auth; this.freeLimit = 5; this.proLimit = 20; }
+    getLimit() { return this.auth.isLoggedIn() ? this.proLimit : this.freeLimit; }
     getUsage() {
         const today = new Date().toDateString();
-        const saved = localStorage.getItem('scriptgen_usage');
+        const key = this.auth.isLoggedIn() ? 'scriptgen_usage' : 'scriptgen_usage_free';
+        const saved = localStorage.getItem(key);
         if (!saved) return { count: 0, date: today };
         try { const data = JSON.parse(saved); return data.date !== today ? { count: 0, date: today } : data; } catch (e) { return { count: 0, date: today }; }
     }
-    getRemaining() { const usage = this.getUsage(); return Math.max(0, this.dailyLimit - usage.count); }
+    getRemaining() { const usage = this.getUsage(); return Math.max(0, this.getLimit() - usage.count); }
+    recordGeneration() {
+        const key = this.auth.isLoggedIn() ? 'scriptgen_usage' : 'scriptgen_usage_free';
+        const usage = this.getUsage();
+        usage.count++;
+        localStorage.setItem(key, JSON.stringify(usage));
+        return usage;
+    }
 }
 
 window.authService = new AuthService();
@@ -1430,6 +1439,19 @@ window.usageService = new UsageService(window.authService);
                 return;
             }
 
+            // Check usage limit before generating
+            if (authService.isLoggedIn()) {
+                if (usageService.getRemaining() <= 0) {
+                    showToast('Ai atins limita de 20 generări pe zi!', true);
+                    return;
+                }
+            } else {
+                if (usageService.getRemaining() <= 0) {
+                    showToast('Ai atins limita de 5 generări gratuite. Login pentru 20!', true);
+                    return;
+                }
+            }
+
             loading.classList.add('show');
             loadingModel.textContent = `Model: ${modelSelect.options[modelSelect.selectedIndex].text}`;
             output.classList.remove('show');
@@ -1461,7 +1483,7 @@ window.usageService = new UsageService(window.authService);
                 if (authService.isLoggedIn()) {
                     const usage = usageService.recordGeneration();
                     const remaining = usageService.getRemaining();
-                    document.getElementById('usageInfo').textContent = `${remaining}/20 gen rămasă`;
+                    document.getElementById('usageInfo').textContent = `${remaining}/${usageService.getLimit()} gen rămasă`;
                     if (remaining <= 0) showToast('Ai atins limita de 20 generări pe zi!', true);
                 }
 
@@ -1592,7 +1614,7 @@ window.usageService = new UsageService(window.authService);
                 loginBtn.style.display = 'none';
                 userInfo.style.display = 'flex';
                 userInfo.querySelector('.user-email').textContent = user.email;
-                usageInfo.textContent = `${usageService.getRemaining()}/20 gen rămasă`;
+                usageInfo.textContent = `${usageService.getRemaining()}/${usageService.getLimit()} gen rămasă`;
             } else {
                 loginBtn.style.display = 'flex';
                 userInfo.style.display = 'none';
