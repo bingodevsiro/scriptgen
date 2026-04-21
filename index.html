@@ -917,6 +917,40 @@ class AuthService {
     signOut() { this.user = null; localStorage.removeItem('scriptgen_user'); localStorage.removeItem('scriptgen_session'); this.notifyListeners(); }
     isLoggedIn() { return this.user !== null; }
     getUser() { return this.user; }
+    async signInWithGitHub() {
+        const redirectUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=github&redirect_to=${encodeURIComponent(window.location.origin + window.location.pathname)}?auth_callback=github`;
+        window.location.href = redirectUrl;
+    }
+    async signInWithGoogle() {
+        const redirectUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin + window.location.pathname)}?auth_callback=google`;
+        window.location.href = redirectUrl;
+    }
+    async handleOAuthCallback() {
+        const params = new URLSearchParams(window.location.search);
+        const accessToken = params.get('access_token');
+        const type = params.get('type');
+        if (accessToken && type === 'recovery') {
+            localStorage.setItem('scriptgen_session', accessToken);
+            await this.getCurrentUser();
+        }
+        // Clean URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    async getCurrentUser() {
+        const session = localStorage.getItem('scriptgen_session');
+        if (!session) return null;
+        try {
+            const response = await fetch(SUPABASE_URL + '/auth/v1/user', {
+                headers: { 'Authorization': `Bearer ${session}`, 'apikey': SUPABASE_ANON_KEY }
+            });
+            if (!response.ok) return null;
+            const data = await response.json();
+            this.user = { id: data.id, email: data.email, aud: data.aud };
+            localStorage.setItem('scriptgen_user', JSON.stringify(this.user));
+            this.notifyListeners();
+            return this.user;
+        } catch (e) { return null; }
+    }
 }
 
 class UsageService {
