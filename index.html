@@ -699,13 +699,40 @@
 
         /* Responsive */
         @media (max-width: 640px) {
-            .container { padding: 16px; }
-            .main-card { padding: 16px; }
+            .container { padding: 12px; }
+            .main-card { padding: 12px; }
             .actions { flex-direction: column; }
             .btn { width: 100%; }
             .options-row { flex-direction: column; }
             .output-actions { width: 100%; }
             .action-btn { flex: 1; justify-content: center; }
+            header { flex-direction: column; gap: 12px; }
+            .header-controls { flex-wrap: wrap; justify-content: center; }
+            .logo { font-size: 1.3rem; }
+            .logo-sub { font-size: 0.7rem; }
+            .tagline { font-size: 0.8rem; }
+            textarea#prompt { min-height: 100px; font-size: 14px; }
+            .categories { gap: 6px; }
+            .category { padding: 6px 10px; font-size: 0.75rem; }
+            .templates-section { display: none; }
+            .user-info-header { flex-wrap: wrap; justify-content: center; }
+            .user-info-header .user-email { width: 100%; text-align: center; }
+            #usageInfo { font-size: 0.7rem; }
+            .modal-content { margin: 16px; padding: 20px; }
+            .modal-content h2 { font-size: 1.3rem; }
+            .output-header { flex-wrap: wrap; gap: 8px; }
+            .output-header h3 { width: 100%; font-size: 0.9rem; }
+            .code-output { font-size: 12px; }
+            footer { padding: 20px 0; }
+            footer .donation-section iframe { max-width: 100%; }
+        }
+        
+        @media (max-width: 400px) {
+            .categories { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+            .category { flex-shrink: 0; }
+            .select-wrapper select { font-size: 0.8rem; }
+            .action-btn span { display: none; }
+            .action-btn { padding: 10px; }
         }
     </style>
 </head>
